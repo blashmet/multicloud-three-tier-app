@@ -1,22 +1,22 @@
-# Variable definitions
+# VARIABLES
 variable "region" {}
 variable "tf_state_vpc_bucket_name" {}
 variable "tf_state_vpc_key_name" {}
 
-# Provider and access setup
+# PROVIDER
 provider "aws" {
   version = "~> 2.0"
   region = var.region
 }
 
-# Backend Config
+# BACKEND
 terraform {
   backend "s3" {
     key = "gateways.tfstate"
   }
 }
 
-# Remote State Import
+# REMOTE STATE
 data "terraform_remote_state" "vpc" {
   backend = "s3"
   config = {
@@ -26,8 +26,7 @@ data "terraform_remote_state" "vpc" {
   }
 }
 
-# Resources
-
+# RESOURCES
 resource "aws_internet_gateway" "igw" {
   vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id
 

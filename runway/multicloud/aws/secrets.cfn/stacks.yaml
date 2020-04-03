@@ -1,0 +1,10 @@
+namespace: ${namespace}
+stacker_bucket: ${stacker_bucket_name}
+
+sys_path: ./
+
+stacks:
+  rds-secret:
+    template_path: templates/secrets.yml
+    variables:
+      SecretName: ${rds_secret_name}
