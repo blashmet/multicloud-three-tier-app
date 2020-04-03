@@ -37,6 +37,34 @@ deployments:
               bucket: aws-us-east-1-tf-state-gateways::TerraformStateBucketName
               dynamodb_table: aws-us-east-1-tf-state-gateways::TerraformStateTableName
 
+        - name: routes
+          path: routes.tf
+          options:
+            terraform_backend_config:
+              region: us-east-1
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-east-1-tf-state-routes::TerraformStateBucketName
+              dynamodb_table: aws-us-east-1-tf-state-routes::TerraformStateTableName
+
+        - name: secrets
+          path: secrets.tf
+          options:
+            terraform_backend_config:
+              region: us-east-1
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-east-1-tf-state-secrets::TerraformStateBucketName
+              dynamodb_table: aws-us-east-1-tf-state-secrets::TerraformStateTableName
+
+        - name: security-groups
+          path: security-groups.tf
+          options:
+            terraform_backend_config:
+              region: us-east-1
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-east-1-tf-state-security-groups::TerraformStateBucketName
+              dynamodb_table: aws-us-east-1-tf-security-groups::TerraformStateTableName
+
+
     regions:
       - us-east-1
 
