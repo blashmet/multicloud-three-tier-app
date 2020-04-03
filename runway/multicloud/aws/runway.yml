@@ -1,0 +1,44 @@
+---
+ignore_git_branch: true
+
+deployments:
+
+  - name: terraform-state-lock
+
+    modules:
+        - name: Terraform DynamoDB State Lock
+          path: dynamo-state-lock.cfn
+
+    regions:
+      - us-east-1
+
+    account_id:
+      vcore: 810041203434
+
+  - name: aws-deployment
+
+    modules:
+
+        - name: vpc
+          path: vpc.tf
+          options:
+            terraform_backend_config:
+              region: us-east-1
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-east-1-tf-state-vpc::TerraformStateBucketName
+              dynamodb_table: aws-us-east-1-tf-state-vpc::TerraformStateTableName
+
+        - name: gateways
+          path: gateways.tf
+          options:
+            terraform_backend_config:
+              region: us-east-1
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-east-1-tf-state-gateways::TerraformStateBucketName
+              dynamodb_table: aws-us-east-1-tf-state-gateways::TerraformStateTableName
+
+    regions:
+      - us-east-1
+
+    account_id:
+      vcore: 810041203434

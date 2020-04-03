@@ -1,0 +1,14 @@
+---
+deployments:
+
+  - name: azure-deployment
+
+    modules:
+        - name: Google Cloud Platform
+          path: gcp.tf
+
+    regions:
+      - us-east-1
+
+    account_id:
+      vcore: 810041203434
