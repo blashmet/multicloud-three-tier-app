@@ -35,13 +35,13 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 
-resource "aws_eip" "ngw-eip" {
+resource "aws_eip" "ngw_eip" {
   vpc      = true
 }
 
 resource "aws_nat_gateway" "ngw" {
   
-  allocation_id = aws_eip.ngw-eip.id
+  allocation_id = aws_eip.ngw_eip.id
   subnet_id     = data.terraform_remote_state.vpc.outputs.pub_sub_1_id
 
   depends_on = [aws_internet_gateway.igw]

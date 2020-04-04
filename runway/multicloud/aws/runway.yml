@@ -67,6 +67,24 @@ deployments:
               bucket: aws-us-east-1-tf-state-rds::TerraformStateBucketName
               dynamodb_table: aws-us-east-1-tf-state-rds::TerraformStateTableName
 
+        - name: beanstalk-app
+          path: beanstalk-app.tf
+          options:
+            terraform_backend_config:
+              region: us-east-1
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-east-1-tf-state-rds::TerraformStateBucketName
+              dynamodb_table: aws-us-east-1-tf-state-rds::TerraformStateTableName
+
+        - name: iam-roles
+          path: iam-roles.tf
+          options:
+            terraform_backend_config:
+              region: us-east-1
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-east-1-tf-state-iam-roles::TerraformStateBucketName
+              dynamodb_table: aws-us-east-1-tf-iam-roles::TerraformStateTableName
+
     regions:
       - us-east-1
 
