@@ -9,6 +9,11 @@ variable "tf_state_rds_key_name" {}
 variable "tf_state_beanstalk_app_bucket_name" {}
 variable "tf_state_beanstalk_app_key_name" {}
 
+variable "tf_state_security_groups_bucket_name" {}
+variable "tf_state_security_groups_key_name" {}
+
+variable "terraform_demo_ec2_keypair_name" {}
+
 
 #PROVIDER
 provider "aws" {
@@ -51,14 +56,15 @@ data "terraform_remote_state" "beanstalk_app" {
   }
 }
 
-data "terraform_remote_state" "iam_roles" {
+data "terraform_remote_state" "security_groups" {
   backend = "s3"
   config = {
-    bucket = var.tf_state_iam_roles_bucket_name
-    key = var.tf_state_iam_roles_key_name
+    bucket = var.tf_state_security_groups_bucket_name
+    key = var.tf_state_security_groups_key_name
     region = var.region
   }
 }
+
 
 #RESOURCES
 
@@ -98,20 +104,24 @@ resource "aws_elastic_beanstalk_configuration_template" "beanstalk_config_templa
 
     namespace = "aws:autoscaling:launchconfiguration"
     name = "IamInstanceProfile"
-    value = data.terraform_remote_state.aws_iam_role.ec2_role.outputs.beanstalk_app_arn
+    value = data.terraform_remote_state.aws_iam_role.ec2_role.outputs.ec2_role_id
     
   }
 
   setting {
+
     namespace = "aws:autoscaling:launchconfiguration"
     name = "SecurityGroups"
-    value = "${aws_security_group.app-prod.id}"
+    value = data.terraform_remote_state.aws_security_group.ec2.outputs.ec2_sg_id
+
   }
 
   setting {
+
     namespace = "aws:autoscaling:launchconfiguration"
     name = "EC2KeyName"
-    value = "${aws_key_pair.app.id}"
+    value = var.terraform_demo_ec2_keypair_name
+
   }
 
   setting {

@@ -49,6 +49,12 @@ deployments:
         - name: secrets
           path: secrets.cfn
 
+        - name: cfn-secret-provider
+          path: cfn-secret-provider.cfn
+
+        - name: ec2-keys
+          path: ec2-keys.cfn
+
         - name: security-groups
           path: security-groups.tf
           options:

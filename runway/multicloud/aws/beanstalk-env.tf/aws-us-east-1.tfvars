@@ -12,4 +12,5 @@ tf_state_beanstalk_app_key_name = "env:/aws/beanstalk-app.tfstate"
 
 #BEANSTALK ENVIRONMENT
 solution_stack_name = "64bit Amazon Linux 2017.03 v2.5.0 running PHP 5.6"
+terraform_demo_ec2_keypair_name = "terraform-demo-keypair-dev-us-east-1"
 

@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: >-
+  EC2 keypairs. Private key stored in parameter store.
+
+Parameters:
+
+  KeyPairName:
+    Type: String
+
+  PrivateKeyName:
+    Type: String
+
+Resources:  
+
+  PrivateKey:
+    Type: Custom::RSAKey
+    Properties:
+      Name: !Ref PrivateKeyName
+      ServiceToken: !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:binxio-cfn-secret-provider'
+
+  KeyPair:
+    Type: Custom::KeyPair
+    DependsOn: PrivateKey
+    Properties:
+      Name: !Ref KeyPairName
+      PublicKeyMaterial: !GetAtt 'PrivateKey.PublicKey'
+      ServiceToken: !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:binxio-cfn-secret-provider'
+
+Outputs:
+
+  KeyPair:
+    Description: KeyPair Name
+    Value: !Ref "KeyPairName"
+    Export:
+      Name: !Ref KeyPairName    
