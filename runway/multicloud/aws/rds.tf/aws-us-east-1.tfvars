@@ -6,6 +6,8 @@ tf_state_vpc_bucket_name = "terraform-state-vpc-bucket"
 tf_state_vpc_key_name = "env:/aws/vpc.tfstate"
 tf_state_secrets_bucket_name = "terraform-state-secrets-bucket"
 tf_state_secrets_key_name = "env:/aws/secrets.tfstate"
+tf_state_security_groups_bucket_name = "terraform-state-security-groups-bucket"
+tf_state_security_groups_key_name = "env:/aws/security-groups.tfstate"
 
 #RDS
 username             = "REMOTE DATA SOURCE: SEE SECRETS MANAGER"

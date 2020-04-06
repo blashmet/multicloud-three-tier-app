@@ -18,8 +18,16 @@ tf_state_security_groups_bucket_name = "terraform-state-security-groups-bucket"
 tf_state_security_groups_key_name = "env:/aws/security-groups.tfstate"
 
 
+#BEANSTALK APPLICATION VERSION
+beanstalk_app_version_name = "terraform-demo-us-east-1-dev-config"
+beanstalk_app_version_description = "Application version managed by Terraform"
+beanstalk_app_version_source_bucket_name = "aws-us-east-1-source-bundle"
+beanstalk_app_version_source_bucket_key_name = "dotnet-blue.zip"
 
-#BEANSTALK ENVIRONMENT
-solution_stack_name = "64bit Amazon Linux 2017.03 v2.5.0 running PHP 5.6"
+#BEANSTALK CONFIG TEMPLATE (ENVIRONMENT)
+
+solution_stack_name = "64bit Windows Server Core 2019 v2.5.2 running IIS 10.0"
 terraform_demo_ec2_keypair_name = "terraform-demo-keypair-dev-us-east-1"
-instance_type = "t2.micro"
+instance_type = "m4.large"
+beanstalk_config_template_name = "beanstalk_config_template"
+beanstalk_env_name = "terraform-demo-dev"

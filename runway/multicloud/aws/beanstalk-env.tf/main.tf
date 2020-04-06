@@ -1,13 +1,21 @@
 #VARIABLES
 
-  #LOCATION
+  #NAMESPACE
   variable "region" {}
   variable "environment" {}
 
-  #BEANSTALK CONFIG TEMPLATE
+  #BEANSTALK APP VERSION
+  variable "beanstalk_app_version_name" {}
+  variable "beanstalk_app_version_description" {}
+  variable "beanstalk_app_version_source_bucket_name" {}
+  variable "beanstalk_app_version_source_bucket_key_name" {}
+
+  #BEANSTALK CONFIG TEMPLATE (ENVIRONMENT)
   variable "instance_type" {}
   variable "solution_stack_name" {}
   variable "rds_secret_stack_name" {}
+  variable "beanstalk_config_template_name" {}
+  variable "beanstalk_env_name" {}  
 
   #REMOTE STATE
   variable "tf_state_vpc_bucket_name" {}
@@ -21,7 +29,6 @@
   variable "tf_state_iam_roles_bucket_name" {}
   variable "tf_state_iam_roles_key_name" {}
   variable "terraform_demo_ec2_keypair_name" {}
-
 
 #PROVIDER
 provider "aws" {
@@ -101,8 +108,8 @@ data "aws_secretsmanager_secret_version" "rds_secret" {
 
 resource "aws_elastic_beanstalk_configuration_template" "beanstalk_config_template" {
 
-  name = "terraform-demo-${var.region}-${var.environment}-config"
-  application = data.terraform_remote_state.beanstalk_app.outputs.arn
+  name = var.beanstalk_config_template_name
+  application = data.terraform_remote_state.beanstalk_app.outputs.beanstalk_app_name
   solution_stack_name = var.solution_stack_name
 
 
@@ -122,20 +129,25 @@ resource "aws_elastic_beanstalk_configuration_template" "beanstalk_config_templa
 
   }
 
-  setting {
-
+    setting {
     namespace = "aws:ec2:vpc"
-    name = "AssociatePublicIpAddress"
-    value = "false"
-
+    name = "ELBSubnets"
+    value = "${data.terraform_remote_state.vpc.outputs.pub_sub_1_id}, ${data.terraform_remote_state.vpc.outputs.pub_sub_2_id}"
   }
 
-  setting {
 
-    namespace = "aws:autoscaling:launchconfiguration"
-    name = "IamInstanceProfile"
-    value = data.terraform_remote_state.iam_roles.outputs.ec2_role_id
-    
+
+  setting {
+    namespace = "aws:autoscaling:asg"
+    name = "MinSize"
+    value = "1"
+  }
+
+  
+  setting {
+    namespace = "aws:autoscaling:asg"
+    name = "MaxSize"
+    value = "2"
   }
 
   setting {
@@ -166,17 +178,18 @@ resource "aws_elastic_beanstalk_configuration_template" "beanstalk_config_templa
     value = "aws-elasticbeanstalk-service-role"
   }
 
-  setting {
-    namespace = "aws:ec2:vpc"
-    name = "ELBScheme"
-    value = "public"
+    setting {
+    namespace = "aws:elb:loadbalancer"
+    name = "SecurityGroups"
+    value = data.terraform_remote_state.security_groups.outputs.elb_sg_id
   }
 
   setting {
-    namespace = "aws:ec2:vpc"
-    name = "ELBSubnets"
-    value = "${data.terraform_remote_state.vpc.outputs.pub_sub_1_id}, ${data.terraform_remote_state.vpc.outputs.pub_sub_2_id}"
+    namespace = "aws:elb:loadbalancer"
+    name = "ManagedSecurityGroup"
+    value = data.terraform_remote_state.security_groups.outputs.elb_sg_id
   }
+
 
   setting {
     namespace = "aws:elb:loadbalancer"
@@ -184,35 +197,6 @@ resource "aws_elastic_beanstalk_configuration_template" "beanstalk_config_templa
     value = "true"
   }
 
-  setting {
-    namespace = "aws:elasticbeanstalk:command"
-    name = "BatchSize"
-    value = "30"
-  }
-
-  setting {
-    namespace = "aws:elasticbeanstalk:command"
-    name = "BatchSizeType"
-    value = "Percentage"
-  }
-
-  setting {
-    namespace = "aws:autoscaling:asg"
-    name = "Availability Zones"
-    value = "Any 2"
-  }
-
-  setting {
-    namespace = "aws:autoscaling:asg"
-    name = "MinSize"
-    value = "1"
-  }
-
-  setting {
-    namespace = "aws:autoscaling:updatepolicy:rollingupdate"
-    name = "RollingUpdateType"
-    value = "Health"
-  }
 
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
@@ -235,7 +219,7 @@ resource "aws_elastic_beanstalk_configuration_template" "beanstalk_config_templa
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
     name = "RDS_HOSTNAME"
-    value =  data.terraform_remote_state.rds.outputs.address
+    value =  data.terraform_remote_state.rds.outputs.rds_endpoint
   }
 
 }
@@ -243,19 +227,20 @@ resource "aws_elastic_beanstalk_configuration_template" "beanstalk_config_templa
 
 resource "aws_elastic_beanstalk_application_version" "application_version" {
 
-  name        = "terraform-demo-${var.environment}"
-  application = data.terraform_remote_state.beanstalk_app.outputs.name
-  description = "Application version managed by Terraform"
-  bucket      = "aws-${var.region}-s3-bucket"
-  key         = "dotnet-blue.zip"
+  name        = var.beanstalk_app_version_name
+  application = data.terraform_remote_state.beanstalk_app.outputs.beanstalk_app_name
+  description = var.beanstalk_app_version_description
+  bucket      = var.beanstalk_app_version_source_bucket_name
+  key         = var.beanstalk_app_version_source_bucket_key_name
 
 }
 
+
 resource "aws_elastic_beanstalk_environment" "beanstalk_env" {
 
-  name                = "terraform-demo-${var.environment}"
+  name                = var.beanstalk_env_name
 
-  application         = data.terraform_remote_state.beanstalk_app.outputs.name
+  application         = data.terraform_remote_state.beanstalk_app.outputs.beanstalk_app_name
 
   template_name       = aws_elastic_beanstalk_configuration_template.beanstalk_config_template.name
 

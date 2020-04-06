@@ -15,6 +15,8 @@ variable "tf_state_vpc_bucket_name" {}
 variable "tf_state_vpc_key_name" {}
 variable "tf_state_secrets_bucket_name" {}
 variable "tf_state_secrets_key_name" {}
+variable "tf_state_security_groups_bucket_name" {}
+variable "tf_state_security_groups_key_name" {}
 
 
 #PROVIDER
@@ -36,6 +38,15 @@ data "terraform_remote_state" "vpc" {
   config = {
     bucket = var.tf_state_vpc_bucket_name
     key = var.tf_state_vpc_key_name
+    region = var.region
+  }
+}
+
+data "terraform_remote_state" "security_groups" {
+  backend = "s3"
+  config = {
+    bucket = var.tf_state_security_groups_bucket_name
+    key = var.tf_state_security_groups_key_name
     region = var.region
   }
 }
@@ -77,6 +88,8 @@ resource "aws_db_instance" "rds" {
   name                      = var.name
   db_subnet_group_name      = aws_db_subnet_group.rds_subnet_group.id
   parameter_group_name      = var.parameter_group_name
+  vpc_security_group_ids    = data.terraform_remote_state.security_groups.outputs.rds_sg_id
+  skip_final_snapshot       = true
 
   username                  = jsondecode(data.aws_secretsmanager_secret_version.rds_secret.secret_string)["username"]
   password                  = jsondecode(data.aws_secretsmanager_secret_version.rds_secret.secret_string)["password"]

@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters:
+
+  BucketName:
+    Description: Select VPC.
+    Type: String
+
+
+Resources:
+
+  SourceBundleBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+      
+Outputs:
+
+  SourceBundleBucket:
+    Description: S3 bucket for source bundles.
+    Value: !Ref SourceBundleBucket
+    Export:
+      Name: SourceBundleBucket
