@@ -3,6 +3,7 @@
 variable "region" {}
 variable "tf_state_vpc_bucket_name" {}
 variable "tf_state_vpc_key_name" {}
+variable "application_name" {}
 
 
 # Provider and access setup
@@ -16,7 +17,7 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    key = "security-groups.tfstate"
+    key = "beanstalk-app.tfstate"
   }
 }
 
@@ -41,7 +42,7 @@ data "aws_iam_role" "beanstalk_role" {
 
 resource "aws_elastic_beanstalk_application" "beanstalk_app" {
 
-  name        = "terraform-demo"
+  name        = var.application_name 
 
   description = "Application managed by Terraform"
 

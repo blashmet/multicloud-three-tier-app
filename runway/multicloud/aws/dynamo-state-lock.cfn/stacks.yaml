@@ -3,6 +3,8 @@ stacker_bucket: ${stacker_bucket_name}
 
 sys_path: ./
 
+
+
 stacks:
   tf-state-vpc:
     template_path: templates/tf_state.yml
@@ -22,11 +24,6 @@ stacks:
       BucketName: ${tf_state_routes_bucket_name}
       TableName: ${tf_state_routes_table_name}
 
-  tf-state-secrets:
-    template_path: templates/tf_state.yml
-    variables:
-      BucketName: ${tf_state_secrets_bucket_name}
-      TableName: ${tf_state_secrets_table_name}
 
   tf-state-security-groups:
     template_path: templates/tf_state.yml
@@ -57,3 +54,9 @@ stacks:
     variables:
       BucketName: ${tf_state_beanstalk_env_bucket_name}
       TableName: ${tf_state_beanstalk_env_table_name}
+
+  tf-state-beanstalk-source:
+    template_path: templates/tf_state.yml
+    variables:
+      BucketName: ${tf_state_beanstalk_source_bucket_name}
+      TableName: ${tf_state_beanstalk_source_table_name}

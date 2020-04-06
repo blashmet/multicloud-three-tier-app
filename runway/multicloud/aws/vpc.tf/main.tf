@@ -37,7 +37,7 @@ resource "aws_vpc" "vpc" {
 
 }
 
-resource "aws_subnet" "pub-sub-1" {
+resource "aws_subnet" "pub_sub_1" {
   vpc_id     = aws_vpc.vpc.id
   cidr_block = var.pub_sub_1_cidr
 
@@ -46,7 +46,7 @@ resource "aws_subnet" "pub-sub-1" {
   }
 }
 
-resource "aws_subnet" "pub-sub-2" {
+resource "aws_subnet" "pub_sub_2" {
   vpc_id     = aws_vpc.vpc.id
   cidr_block = var.pub_sub_2_cidr
 
@@ -55,18 +55,20 @@ resource "aws_subnet" "pub-sub-2" {
   }
 }
 
-resource "aws_subnet" "pri-sub-1" {
+resource "aws_subnet" "pri_sub_1" {
   vpc_id     = aws_vpc.vpc.id
   cidr_block = var.pri_sub_1_cidr
+  availability_zone = "us-east-1b"
 
   tags = {
     Name = "pri-sub-1-${var.region}"
   }
 }
 
-resource "aws_subnet" "pri-sub-2" {
+resource "aws_subnet" "pri_sub_2" {
   vpc_id     = aws_vpc.vpc.id
   cidr_block = var.pri_sub_2_cidr
+  availability_zone = "us-east-1c"
 
   tags = {
     Name = "pri-sub-2-${var.region}"

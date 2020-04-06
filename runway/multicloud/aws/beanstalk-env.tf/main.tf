@@ -1,18 +1,26 @@
-# VARIABLES
-variable "region" {}
-variable "tf_state_vpc_bucket_name" {}
-variable "tf_state_vpc_key_name" {}
+#VARIABLES
 
-variable "tf_state_rds_bucket_name" {}
-variable "tf_state_rds_key_name" {}
+  #LOCATION
+  variable "region" {}
+  variable "environment" {}
 
-variable "tf_state_beanstalk_app_bucket_name" {}
-variable "tf_state_beanstalk_app_key_name" {}
+  #BEANSTALK CONFIG TEMPLATE
+  variable "instance_type" {}
+  variable "solution_stack_name" {}
+  variable "rds_secret_stack_name" {}
 
-variable "tf_state_security_groups_bucket_name" {}
-variable "tf_state_security_groups_key_name" {}
-
-variable "terraform_demo_ec2_keypair_name" {}
+  #REMOTE STATE
+  variable "tf_state_vpc_bucket_name" {}
+  variable "tf_state_vpc_key_name" {}
+  variable "tf_state_rds_bucket_name" {}
+  variable "tf_state_rds_key_name" {}
+  variable "tf_state_beanstalk_app_bucket_name" {}
+  variable "tf_state_beanstalk_app_key_name" {}
+  variable "tf_state_security_groups_bucket_name" {}
+  variable "tf_state_security_groups_key_name" {}
+  variable "tf_state_iam_roles_bucket_name" {}
+  variable "tf_state_iam_roles_key_name" {}
+  variable "terraform_demo_ec2_keypair_name" {}
 
 
 #PROVIDER
@@ -24,7 +32,7 @@ provider "aws" {
 #BACKEND
 terraform {
   backend "s3" {
-    key = "beanstalk-environment.tfstate"
+    key = "beanstalk-env.tfstate"
   }
 }
 
@@ -65,13 +73,36 @@ data "terraform_remote_state" "security_groups" {
   }
 }
 
+data "terraform_remote_state" "iam_roles" {
+  backend = "s3"
+  config = {
+    bucket = var.tf_state_iam_roles_bucket_name
+    key = var.tf_state_iam_roles_key_name
+    region = var.region
+  }
+}
+
+#DATA
+
+data "aws_cloudformation_stack" "rds_secret_stack" {
+
+  name = var.rds_secret_stack_name
+
+}
+
+
+data "aws_secretsmanager_secret_version" "rds_secret" {
+
+  secret_id = data.aws_cloudformation_stack.rds_secret_stack.outputs["RDSSecretName"]
+
+}
 
 #RESOURCES
 
 resource "aws_elastic_beanstalk_configuration_template" "beanstalk_config_template" {
 
-  name = "terraform-demo-${var.environment}"
-  application = data.terraform_remote_state.aws_elastic_beanstalk_application.beanstalk_app.outputs.arn
+  name = "terraform-demo-${var.region}-${var.environment}-config"
+  application = data.terraform_remote_state.beanstalk_app.outputs.arn
   solution_stack_name = var.solution_stack_name
 
 
@@ -87,8 +118,7 @@ resource "aws_elastic_beanstalk_configuration_template" "beanstalk_config_templa
 
     namespace = "aws:ec2:vpc"
     name = "Subnets"
-    value = "${data.terraform_remote_state.vpc.outputs.pri_sub_1_id},    
-             ${data.terraform_remote_state.vpc.outputs.pri_sub_2_id}" 
+    value = "${data.terraform_remote_state.vpc.outputs.pri_sub_1_id}, ${data.terraform_remote_state.vpc.outputs.pri_sub_2_id}" 
 
   }
 
@@ -104,7 +134,7 @@ resource "aws_elastic_beanstalk_configuration_template" "beanstalk_config_templa
 
     namespace = "aws:autoscaling:launchconfiguration"
     name = "IamInstanceProfile"
-    value = data.terraform_remote_state.aws_iam_role.ec2_role.outputs.ec2_role_id
+    value = data.terraform_remote_state.iam_roles.outputs.ec2_role_id
     
   }
 
@@ -112,7 +142,7 @@ resource "aws_elastic_beanstalk_configuration_template" "beanstalk_config_templa
 
     namespace = "aws:autoscaling:launchconfiguration"
     name = "SecurityGroups"
-    value = data.terraform_remote_state.aws_security_group.ec2.outputs.ec2_sg_id
+    value = data.terraform_remote_state.security_groups.outputs.ec2_sg_id
 
   }
 
@@ -127,7 +157,7 @@ resource "aws_elastic_beanstalk_configuration_template" "beanstalk_config_templa
   setting {
     namespace = "aws:autoscaling:launchconfiguration"
     name = "InstanceType"
-    value = "t2.micro"
+    value = var.instance_type
   }
 
   setting {
@@ -187,59 +217,46 @@ resource "aws_elastic_beanstalk_configuration_template" "beanstalk_config_templa
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
     name = "RDS_USERNAME"
-    value = data.terraform_remote_state.rds.outputs.username
+    value = jsondecode(data.aws_secretsmanager_secret_version.rds_secret.secret_string)["username"]
   }
 
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
     name = "RDS_PASSWORD"
-    value = "${aws_db_instance.rds-app-prod.password}"
+    value = jsondecode(data.aws_secretsmanager_secret_version.rds_secret.secret_string)["password"]
   }
 
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
     name = "RDS_DATABASE"
     value = "mydb"
-    value = "${aws_db_instance.rds-app-prod.name}"
   }
 
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
     name = "RDS_HOSTNAME"
-    value = "${aws_db_instance.rds-app-prod.endpoint}"
+    value =  data.terraform_remote_state.rds.outputs.address
   }
 
 }
 
 
+resource "aws_elastic_beanstalk_application_version" "application_version" {
+
+  name        = "terraform-demo-${var.environment}"
+  application = data.terraform_remote_state.beanstalk_app.outputs.name
+  description = "Application version managed by Terraform"
+  bucket      = "aws-${var.region}-s3-bucket"
+  key         = "dotnet-blue.zip"
 
 }
 
-resource "aws_elastic_beanstalk_environment" "beanstalk-env" {
+resource "aws_elastic_beanstalk_environment" "beanstalk_env" {
 
-  name                = "terraform-${var.environment}"
+  name                = "terraform-demo-${var.environment}"
 
-  application         = "${aws_elastic_beanstalk_application.tftest.name}"
+  application         = data.terraform_remote_state.beanstalk_app.outputs.name
 
-  solution_stack_name = "64bit Amazon Linux 2015.03 v2.0.3 running Go 1.4"
+  template_name       = aws_elastic_beanstalk_configuration_template.beanstalk_config_template.name
 
-}
-
-
-
-
-
-resource "aws_elastic_beanstalk_application" "beanstalk-app" {
-
-  name        = "terraform-demo"
-
-  description = "Application managed by Terraform"
-
-  appversion_lifecycle {
-    
-    service_role          = data.aws_iam_role.beanstalk-role.arn
-    max_count             = 5
-    delete_source_from_s3 = true
-
-  }
 }

@@ -1,5 +1,6 @@
 #VARIABLES
 variable "region" {}
+variable "db_instance_identifier" {}
 variable "allocated_storage" {}
 variable "storage_type" {}
 variable "engine" {}
@@ -25,7 +26,7 @@ provider "aws" {
 #BACKEND
 terraform {
   backend "s3" {
-    key = "security-groups.tfstate"
+    key = "rds.tfstate"
   }
 }
 
@@ -40,15 +41,13 @@ data "terraform_remote_state" "vpc" {
 }
 
 
-data "aws_cloudformation_stack" "secret-cfn-stack" {
+data "aws_cloudformation_stack" "rds_secret_stack" {
   name = "aws-${var.region}-rds-secret"
 }
 
 
 #RESOURCES
-resource "aws_db_subnet_group" "rds-subnet-group" {
-
-  name       = var.subnet_group_name
+resource "aws_db_subnet_group" "rds_subnet_group" {
 
   subnet_ids = [    
                 data.terraform_remote_state.vpc.outputs.pri_sub_1_id,
@@ -61,30 +60,30 @@ resource "aws_db_subnet_group" "rds-subnet-group" {
 }
 
 
-data "aws_secretsmanager_secret_version" "rds-secret" {
+data "aws_secretsmanager_secret_version" "rds_secret" {
 
-  secret_id = data.aws_cloudformation_stack.secret-cfn-stack.outputs["RDSSecretName"]
+  secret_id = data.aws_cloudformation_stack.rds_secret_stack.outputs["RDSSecretName"]
 
 }
 
 resource "aws_db_instance" "rds" {
 
-  db_instance_identifier    = var.db_instance_identifier
+  identifier                = var.db_instance_identifier
   allocated_storage         = var.allocated_storage
   storage_type              = var.storage_type
   engine                    = var.engine
   engine_version            = var.engine_version
   instance_class            = var.instance_class
   name                      = var.name
-  db_subnet_group_name      = var.subnet_group_name
+  db_subnet_group_name      = aws_db_subnet_group.rds_subnet_group.id
   parameter_group_name      = var.parameter_group_name
 
-  username                  = jsondecode(data.aws_secretsmanager_secret_version.rds-secret.secret_string)["username"]
-  password                  = jsondecode(data.aws_secretsmanager_secret_version.rds-secret.secret_string)["password"]
+  username                  = jsondecode(data.aws_secretsmanager_secret_version.rds_secret.secret_string)["username"]
+  password                  = jsondecode(data.aws_secretsmanager_secret_version.rds_secret.secret_string)["password"]
 
 
     depends_on = [
-    aws_db_subnet_group.rds-subnet-group,
+    aws_db_subnet_group.rds_subnet_group,
   ]
 
 

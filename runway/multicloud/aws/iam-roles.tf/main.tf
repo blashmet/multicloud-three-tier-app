@@ -1,6 +1,8 @@
 #VARIABLES
 variable "region" {}
 variable "environment" {}
+variable "tf_state_vpc_bucket_name" {}
+variable "tf_state_vpc_key_name" {}
 variable "tf_state_iam_roles_bucket_name" {}
 variable "tf_state_iam_roles_key_name" {}
 
@@ -14,7 +16,7 @@ provider "aws" {
 #BACKEND
 terraform {
   backend "s3" {
-    key = "security-groups.tfstate"
+    key = "iam-roles.tfstate"
   }
 }
 
@@ -38,6 +40,6 @@ data "aws_iam_role" "beanstalk_role" {
 
 data "aws_iam_role" "ec2_role" {
 
-  name = "aws-elasticbeanstalk-service-role"
+  name = "aws-elasticbeanstalk-ec2-role"
 
 }

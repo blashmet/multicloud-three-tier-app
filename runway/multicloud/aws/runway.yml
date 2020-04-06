@@ -64,6 +64,15 @@ deployments:
               bucket: aws-us-east-1-tf-state-security-groups::TerraformStateBucketName
               dynamodb_table: aws-us-east-1-tf-state-security-groups::TerraformStateTableName
 
+        - name: iam-roles
+          path: iam-roles.tf
+          options:
+            terraform_backend_config:
+              region: us-east-1
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-east-1-tf-state-iam-roles::TerraformStateBucketName
+              dynamodb_table: aws-us-east-1-tf-state-iam-roles::TerraformStateTableName
+
         - name: rds
           path: rds.tf
           options:
@@ -79,18 +88,27 @@ deployments:
             terraform_backend_config:
               region: us-east-1
             terraform_backend_cfn_outputs:
-              bucket: aws-us-east-1-tf-state-rds::TerraformStateBucketName
-              dynamodb_table: aws-us-east-1-tf-state-rds::TerraformStateTableName
+              bucket: aws-us-east-1-tf-state-beanstalk-app::TerraformStateBucketName
+              dynamodb_table: aws-us-east-1-tf-state-beanstalk-app::TerraformStateTableName
 
-        - name: iam-roles
-          path: iam-roles.tf
+        - name: beanstalk-source
+          path: beanstalk-source.cfn
           options:
             terraform_backend_config:
               region: us-east-1
             terraform_backend_cfn_outputs:
-              bucket: aws-us-east-1-tf-state-iam-roles::TerraformStateBucketName
-              dynamodb_table: aws-us-east-1-tf-iam-roles::TerraformStateTableName
+              bucket: aws-us-east-1-tf-state-beanstalk-source::TerraformStateBucketName
+              dynamodb_table: aws-us-east-1-tf-beanstalk-source::TerraformStateTableName
 
+        - name: beanstalk-env
+          path: beanstalk-env.tf
+          options:
+            terraform_backend_config:
+              region: us-east-1
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-east-1-tf-state-beanstalk-env::TerraformStateBucketName
+              dynamodb_table: aws-us-east-1-tf-state-beanstalk-env::TerraformStateTableName
+          
     regions:
       - us-east-1
 
