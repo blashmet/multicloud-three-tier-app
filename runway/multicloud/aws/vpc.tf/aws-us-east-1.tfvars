@@ -1,6 +1,0 @@
-region = "us-east-1"
-vpc_cidr = "172.32.0.0/16"
-pub_sub_1_cidr = "172.32.0.0/24"
-pub_sub_2_cidr = "172.32.1.0/24"
-pri_sub_1_cidr = "172.32.3.0/24"
-pri_sub_2_cidr = "172.32.4.0/24"

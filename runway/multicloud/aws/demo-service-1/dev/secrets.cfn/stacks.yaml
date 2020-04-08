@@ -1,0 +1,10 @@
+namespace: ${namespace}
+cfngin_bucket: ${cfngin_bucket_name}
+
+sys_path: ./
+
+stacks:
+  rds-secret:
+    template_path: ../../modules/security/secrets.cfn/templates/secrets.yml
+    variables:
+      SecretName: ${rds_secret_name}

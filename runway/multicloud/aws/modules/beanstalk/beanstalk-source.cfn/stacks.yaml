@@ -1,0 +1,26 @@
+namespace: ${namespace}
+stacker_bucket: ${stacker_bucket_name}
+sys_path: ./
+
+pre_destroy:
+
+  empty_bucket:
+    path: hooks.empty_bucket.empty_source_bucket
+    args:
+      s3_bucket: ${namespace}-source-bundle
+      bundle_path: ../source/dotnet-asp-v1/source_bundles/dotnet-asp-v1.zip
+
+stacks:
+
+  s3-bucket:
+    template_path: templates/s3_bucket.yml
+    variables:
+      BucketName: ${namespace}-source-bundle
+
+post_build:
+
+  source_bundle:
+    path: hooks.upload_source.upload_source_bundle
+    args:
+      s3_bucket: ${namespace}-source-bundle
+      bundle_path: ../source/dotnet-asp-v1/source_bundles/dotnet-asp-v1.zip

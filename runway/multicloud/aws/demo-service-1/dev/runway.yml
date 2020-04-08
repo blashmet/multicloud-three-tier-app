@@ -1,0 +1,208 @@
+---
+ignore_git_branch: true
+
+deployments:
+
+  - name: aws-us-west-1-dev
+
+    modules:
+        - name: dynamo-state-lock
+          path: dynamo-state-lock.cfn
+
+        - name: vpc
+          path: vpc.tf
+          options:
+            terraform_backend_config:
+              region: us-west-1
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-west-1-dev-vpc-tf-state::TerraformStateBucketName 
+              dynamodb_table: aws-us-west-1-dev-vpc-tf-state::TerraformStateTableName
+
+        - name: gateways
+          path: gateways.tf
+          options:
+            terraform_backend_config:
+              region: us-west-1
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-west-1-dev-gateways-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-us-west-1-dev-gateways-tf-state::TerraformStateTableName
+
+        - name: routes
+          path: routes.tf
+          options:
+            terraform_backend_config:
+              region: us-west-1
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-west-1-dev-routes-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-us-west-1-dev-routes-tf-state::TerraformStateTableName
+
+        - name: secrets
+          path: secrets.cfn
+
+        - name: ec2-key-provider
+          path: ec2-key-provider.cfn
+
+        - name: ec2-keys
+          path: ec2-keys.cfn
+
+        - name: security-groups
+          path: security-groups.tf
+          options:
+            terraform_backend_config:
+              region: us-west-1
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-west-1-dev-security-groups-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-us-west-1-dev-security-groups-tf-state::TerraformStateTableName
+
+        - name: iam-roles
+          path: iam-roles.tf
+          options:
+            terraform_backend_config:
+              region: us-west-1
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-west-1-dev-iam-roles-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-us-west-1-dev-iam-roles-tf-state::TerraformStateTableName
+
+        - name: rds
+          path: rds.tf
+          options:
+            terraform_backend_config:
+              region: us-west-1
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-west-1-dev-rds-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-us-west-1-dev-rds-tf-state::TerraformStateTableName
+
+        - name: beanstalk-app
+          path: beanstalk-app.tf
+          options:
+            terraform_backend_config:
+              region: us-west-1
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-west-1-dev-beanstalk-app-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-us-west-1-dev-beanstalk-app-tf-state::TerraformStateTableName
+
+        - name: beanstalk-source
+          path: beanstalk-source.cfn
+          options:
+            terraform_backend_config:
+              region: us-west-1
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-west-1-dev-beanstalk-source-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-us-west-1-dev-beanstalk-source-tf-state::TerraformStateTableName
+
+        - name: beanstalk-env
+          path: beanstalk-env.tf
+          options:
+            terraform_backend_config:
+              region: us-west-1
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-west-1-dev-beanstalk-env-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-us-west-1-dev-beanstalk-env-tf-state::TerraformStateTableName
+    
+    regions:
+      - us-west-1
+
+    account_id:
+      vcore: 810041203434
+      
+  - name: aws-us-east-2-dev
+
+    modules:
+        - name: dynamo-state-lock
+          path: dynamo-state-lock.cfn
+
+        - name: vpc
+          path: vpc.tf
+          options:
+            terraform_backend_config:
+              region: us-east-2
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-east-2-dev-vpc-tf-state::TerraformStateBucketName 
+              dynamodb_table: aws-us-east-2-dev-vpc-tf-state::TerraformStateTableName
+
+        - name: gateways
+          path: gateways.tf
+          options:
+            terraform_backend_config:
+              region: us-east-2
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-east-2-dev-gateways-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-us-east-2-dev-gateways-tf-state::TerraformStateTableName
+
+        - name: routes
+          path: routes.tf
+          options:
+            terraform_backend_config:
+              region: us-east-2
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-east-2-dev-routes-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-us-east-2-dev-routes-tf-state::TerraformStateTableName
+
+        - name: secrets
+          path: secrets.cfn
+
+        - name: ec2-key-provider
+          path: ec2-key-provider.cfn
+
+        - name: ec2-keys
+          path: ec2-keys.cfn
+
+        - name: security-groups
+          path: security-groups.tf
+          options:
+            terraform_backend_config:
+              region: us-east-2
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-east-2-dev-security-groups-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-us-east-2-dev-security-groups-tf-state::TerraformStateTableName
+
+        - name: iam-roles
+          path: iam-roles.tf
+          options:
+            terraform_backend_config:
+              region: us-east-2
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-east-2-dev-iam-roles-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-us-east-2-dev-iam-roles-tf-state::TerraformStateTableName
+
+        - name: rds
+          path: rds.tf
+          options:
+            terraform_backend_config:
+              region: us-east-2
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-east-2-dev-rds-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-us-east-2-dev-rds-tf-state::TerraformStateTableName
+
+        - name: beanstalk-app
+          path: beanstalk-app.tf
+          options:
+            terraform_backend_config:
+              region: us-east-2
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-east-2-dev-beanstalk-app-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-us-east-2-dev-beanstalk-app-tf-state::TerraformStateTableName
+
+        - name: beanstalk-source
+          path: beanstalk-source.cfn
+          options:
+            terraform_backend_config:
+              region: us-east-2
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-east-2-dev-beanstalk-source-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-us-east-2-dev-beanstalk-source-tf-state::TerraformStateTableName
+
+        - name: beanstalk-env
+          path: beanstalk-env.tf
+          options:
+            terraform_backend_config:
+              region: us-east-2
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-east-2-dev-beanstalk-env-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-us-east-2-dev-beanstalk-env-tf-state::TerraformStateTableName
+
+    regions:
+      - us-east-2
+
+    account_id:
+      vcore: 810041203434
