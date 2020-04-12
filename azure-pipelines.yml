@@ -1,0 +1,31 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+- script: |
+    echo "Starting pipeline..."
+    echo "Current directory is:"
+    pwd
+    echo "Updating packages..."
+    sudo apt update
+    echo "Installing pip..."
+    sudo apt install python3-pip
+    echo "Installing runway..."
+    pip install runway
+    echo "Runway version is:"
+    runway --version
+    echo 'Changing directory to $(cloud_provider), ${service_name}, ${environment}'
+    cd \runway\multicloud\aws\demo-service-1\dev\
+    echo "Setting CI variable..."
+    export CI=1
+    echo "$CI"
+    #runway deploy
+
+  displayName: 'Run a multi-line script'
