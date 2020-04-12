@@ -39,10 +39,12 @@ steps:
     #runway --version
     echo 'Defining $(cloud_provider), ${service_name}, ${environment}'
     echo 'Defining service directory'
-    export service_directory='\runway\multicloud\aws\demo-service-1\dev\'
-    cd $(Agent.BuildDirectory)\\$service_directory
+    #export service_directory='\runway\multicloud\aws\demo-service-1\dev\'
+    #cd $(Agent.BuildDirectory)\\$service_directory
     echo "Current directory is:"
     pwd
+    echo "Directory contents is:"
+    ls
     #echo "Setting CI variable..."
     #export CI=1
     #echo 'CI variable is: ($null = interactive, 1 = CI\CD)'
