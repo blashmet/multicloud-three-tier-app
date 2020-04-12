@@ -45,6 +45,10 @@ steps:
     export CI=1
     echo 'CI variable is:($null = interactive, 1 = CI\CD)'
     echo "$CI"
+    echo "Generating requirements.txt"
+    pipenv lock -r > requirements.txt
+    echo "Installing dependencies..."
+    pip install -r requirements.txt
     echo "Syncing python virtual env"
     pipenv sync
     echo "Runway version is:"
