@@ -1,6 +1,4 @@
 # Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
 trigger:
@@ -27,18 +25,16 @@ steps:
     pip --version
     echo "installing pipenv"
     pip install pipenv
-    #echo "pipenv version is"
+    echo "pipenv version is"
     pipenv --version
-    #echo "Updating packages..."
-    #sudo apt update
-    #echo "Installing pip..."
-    #sudo apt install python3-pip
-    #echo "Installing runway..."
-    #pip install runway
-    #echo "Runway version is:"
-    #runway --version
 
   displayName: 'Verify Python install and install pipenv.'
+
+- script: python -m pipenv lock -r > requirements.txt
+  displayName: 'Create requirements.txt from Pipfile'
+
+- script: pip install -r requirements.txt
+  displayName: 'Install requirements.txt'
 
 - script: |
 
@@ -49,20 +45,18 @@ steps:
     python --version
     echo "pip version is"
     pip --version
+    echo "pipenv version is"
+    pipenv --version
     echo "Setting CI variable..."
     export CI=1
     echo 'CI variable is:($null = interactive, 1 = CI\CD)'
     echo "$CI"
-    echo "Runway version is:"
-    pipenv run runway --version
+    echo "Syncing python virtual env"
+    pipenv sync
+    #echo "Runway version is:"
+    #pipenv run runway --version
     #runway deploy
-    
+
   workingDirectory: $(Build.Repository.LocalPath)/runway/multicloud/aws/demo-service-1/dev/
 
   displayName: 'Run runway command in ${cloud_provider}\${service_name}\${environment}'
-
-- script: python -m pipenv lock -r > requirements.txt
-  displayName: 'Create requirements.txt from Pipfile'
-
-- script: pip install -r requirements.txt
-  displayName: 'Install requirements.txt'
