@@ -21,10 +21,12 @@ steps:
     echo "Starting pipeline..."
     echo "Current directory is:"
     pwd
-    #echo "python version is"
+    echo "python version is"
     python --version
-    #echo "pip version is"
+    echo "pip version is"
     pip --version
+    echo "installing pipenv"
+    pip install --user pipenv
     #echo "pipenv version is"
     pipenv --version
     #echo "Updating packages..."
