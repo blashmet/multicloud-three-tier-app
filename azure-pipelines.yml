@@ -41,7 +41,6 @@ steps:
   displayName: 'Verify Python install and install pipenv.'
 
 - script: |
-  workingDirectory: $(Build.Repository.LocalPath)/runway/multicloud/aws/demo-service-1/dev/
 
     echo "Starting pipeline..."
     echo "Current directory is:"
@@ -57,6 +56,8 @@ steps:
     echo "Runway version is:"
     pipenv run runway --version
     #runway deploy
+    
+  workingDirectory: $(Build.Repository.LocalPath)/runway/multicloud/aws/demo-service-1/dev/
 
   displayName: 'Run runway command in ${cloud_provider}\${service_name}\${environment}'
 
