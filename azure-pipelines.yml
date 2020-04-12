@@ -38,7 +38,7 @@ steps:
     #echo "Runway version is:"
     #runway --version
     echo 'Changing directory to $(cloud_provider), ${service_name}, ${environment}'
-    cd '$(Agent.BuildDirectory)\runway\multicloud\aws\demo-service-1\dev\'
+    cd $(Agent.BuildDirectory)\runway\multicloud\aws\demo-service-1\dev\
     echo "Current directory is:"
     pwd
     #echo "Setting CI variable..."
