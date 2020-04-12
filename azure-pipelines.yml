@@ -26,7 +26,7 @@ steps:
     echo "pip version is"
     pip --version
     echo "installing pipenv"
-    pip install --user pipenv
+    pip install pipenv
     #echo "pipenv version is"
     pipenv --version
     #echo "Updating packages..."
