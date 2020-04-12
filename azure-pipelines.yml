@@ -19,6 +19,8 @@ steps:
     echo "Starting pipeline..."
     echo "Current directory is:"
     pwd
+    #echo "pipenv version is"
+    pipenv --version
     #echo "Updating packages..."
     #sudo apt update
     #echo "Installing pip..."
