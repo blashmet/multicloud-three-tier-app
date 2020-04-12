@@ -41,7 +41,7 @@ steps:
   displayName: 'Verify Python install and install pipenv.'
 
 - script: |
-  workingDirectory: $(Build.ArtifactStagingDirectory)/runway/multicloud/aws/demo-service-1/dev/
+  workingDirectory: $(Build.Repository.LocalPath)/runway/multicloud/aws/demo-service-1/dev/
 
     echo "Starting pipeline..."
     echo "Current directory is:"
