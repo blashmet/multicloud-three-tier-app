@@ -1,10 +1,3 @@
-#BACKEND
-terraform {
-  backend "s3" {
-    key = "vpc.tfstate"
-  }
-}
-
 #RESOURCES
 resource "aws_vpc" "vpc" {
 

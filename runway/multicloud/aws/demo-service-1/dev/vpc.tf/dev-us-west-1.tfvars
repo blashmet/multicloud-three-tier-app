@@ -1,4 +1,3 @@
-state_key = "aws-us-west-1-dev-vpc.tfstate"
 region = "us-west-1"
 environment = "dev"
 vpc_cidr = "172.23.0.0/16"

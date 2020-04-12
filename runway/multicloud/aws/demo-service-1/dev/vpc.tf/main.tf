@@ -1,5 +1,4 @@
 #VARIABLES
-variable state_key {}
 variable region {}
 variable environment {}
 variable vpc_cidr {}
@@ -21,7 +20,7 @@ provider "aws" {
 #BACKEND
 terraform {
   backend "s3" {
-    key = var.state_key
+    key = "vpc-dev.tfstate"
   }
 }
 
@@ -30,7 +29,6 @@ module "vpc" {
 
   source = "../../../modules/network/vpc.tf"
 
-    state_key = var.state_key
     region = var.region
     environment = var.environment
     vpc_cidr = var.vpc_cidr

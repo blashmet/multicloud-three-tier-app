@@ -1,8 +1,0 @@
-namespace: ${namespace}
-cfngin_bucket: ${cfngin_bucket_name}
-
-sys_path: ./
-
-stacks:
-  ec2-key-provider:
-    template_path: ../../modules/security/ec2-key-provider.cfn/templates/ec2_key_provider.yml

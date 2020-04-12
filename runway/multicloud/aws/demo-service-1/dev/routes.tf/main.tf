@@ -15,7 +15,7 @@ provider "aws" {
 #BACKEND
 terraform {
   backend "s3" {
-    key = "routes.tfstate"
+    key = "routes-dev.tfstate"
   }
 }
 

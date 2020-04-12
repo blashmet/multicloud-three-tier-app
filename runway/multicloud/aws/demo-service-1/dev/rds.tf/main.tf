@@ -29,7 +29,7 @@ provider "aws" {
 #BACKEND
 terraform {
   backend "s3" {
-    key = "rds.tfstate"
+    key = "rds-dev.tfstate"
   }
 }
 

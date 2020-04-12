@@ -1,10 +1,3 @@
-#BACKEND
-terraform {
-  backend "s3" {
-    key = "rds.tfstate"
-  }
-}
-
 #REMOTE STATE
 data "terraform_remote_state" "vpc" {
   backend = "s3"

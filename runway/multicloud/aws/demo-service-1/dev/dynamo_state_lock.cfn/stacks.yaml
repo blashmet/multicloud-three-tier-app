@@ -1,0 +1,79 @@
+namespace: ${namespace}
+cfngin_bucket: ${cfngin_bucket_name}
+
+sys_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/
+
+
+pre_destroy:
+
+  empty_bucket:
+    
+    path:  hooks.empty_bucket.empty_source_bucket
+    args:
+      s3_bucket_identifier: ${s3_bucket_identifier}           
+      
+    enabled: ${empty_buckets_bool}
+
+stacks:
+
+  vpc-tf-state:
+    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
+    variables:
+      BucketName: ${tf_state_vpc_bucket_name}
+      TableName: ${tf_state_vpc_table_name}
+    enabled: true
+      
+
+  gateways-tf-state:
+    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
+    variables:
+      BucketName: ${tf_state_gateways_bucket_name}
+      TableName: ${tf_state_gateways_table_name}
+    enabled: true
+      
+
+  routes-tf-state:
+    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
+    variables:
+      BucketName: ${tf_state_routes_bucket_name}
+      TableName: ${tf_state_routes_table_name}
+    enabled: true
+
+  security-groups-tf-state:
+    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
+    variables:
+      BucketName: ${tf_state_security_groups_bucket_name}
+      TableName: ${tf_state_security_groups_table_name}
+    enabled: true
+
+
+  rds-tf-state:
+    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
+    variables:
+      BucketName: ${tf_state_rds_bucket_name}
+      TableName: ${tf_state_rds_table_name}
+    enabled: true
+      
+
+  beanstalk-app-tf-state:
+    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
+    variables:
+      BucketName: ${tf_state_beanstalk_app_bucket_name}
+      TableName: ${tf_state_beanstalk_app_table_name}
+    enabled: true
+      
+
+  beanstalk-env-tf-state:
+    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
+    variables:
+      BucketName: ${tf_state_beanstalk_env_bucket_name}
+      TableName: ${tf_state_beanstalk_env_table_name}
+    enabled: true
+      
+
+  beanstalk-source-tf-state:
+    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
+    variables:
+      BucketName: ${tf_state_beanstalk_source_bucket_name}
+      TableName: ${tf_state_beanstalk_source_table_name}
+    enabled: true   
