@@ -30,12 +30,6 @@ steps:
 
   displayName: 'Verify Python install and install pipenv.'
 
-- script: python -m pipenv lock -r > requirements.txt
-  displayName: 'Create requirements.txt from Pipfile'
-
-- script: pip install -r requirements.txt
-  displayName: 'Install requirements.txt'
-
 - script: |
 
     echo "Starting pipeline..."
@@ -53,8 +47,8 @@ steps:
     echo "$CI"
     echo "Syncing python virtual env"
     pipenv sync
-    #echo "Runway version is:"
-    #pipenv run runway --version
+    echo "Runway version is:"
+    pipenv run runway --version
     #runway deploy
 
   workingDirectory: $(Build.Repository.LocalPath)/runway/multicloud/aws/demo-service-1/dev/
