@@ -38,15 +38,15 @@ steps:
     #echo "Runway version is:"
     #runway --version
     echo 'Changing directory to $(cloud_provider), ${service_name}, ${environment}'
-    cd '\runway\multicloud\aws\demo-service-1\dev\'
+    cd "$(Agent.BuildDirectory)\runway\multicloud\aws\demo-service-1\dev\"
     echo "Current directory is:"
     pwd
-    echo "Setting CI variable..."
-    export CI=1
-    echo "CI variable is: ($null = interactive, 1 = CI\CD)"
-    echo "$CI"
-    echo "Runway version is:"
-    pipenv run runway --version
+    #echo "Setting CI variable..."
+    #export CI=1
+    #echo 'CI variable is: ($null = interactive, 1 = CI\CD)'
+    #echo "$CI"
+    #echo "Runway version is:"
+    #pipenv run runway --version
     #runway deploy
 
   displayName: 'Run a multi-line script'
