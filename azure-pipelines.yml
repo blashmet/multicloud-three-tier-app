@@ -8,18 +8,23 @@ trigger:
 
 pool:
   vmImage: 'ubuntu-latest'
-  
+
 steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.x' 
+    addToPath: true 
+
 - script: |
     echo "Starting pipeline..."
     echo "Current directory is:"
     pwd
-    echo "Updating packages..."
-    sudo apt update
-    echo "Installing pip..."
-    sudo apt install python3-pip
-    echo "Installing runway..."
-    pip install runway
+    #echo "Updating packages..."
+    #sudo apt update
+    #echo "Installing pip..."
+    #sudo apt install python3-pip
+    #echo "Installing runway..."
+    #pip install runway
     echo "Runway version is:"
     runway --version
     echo 'Changing directory to $(cloud_provider), ${service_name}, ${environment}'
