@@ -10,21 +10,21 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
+
 - task: UsePythonVersion@0
   inputs:
     versionSpec: '3.x' 
-    addToPath: true
-
-- script: python -m pipenv lock -r > requirements.txt
-  displayName: 'Create requirements.txt from Pipfile'
-
-- script: pip install -r requirements.txt
-  displayName: 'Install requirements.txt'
+    addToPath: true 
+    #architecture: 'x64' # Options: x86, x64 (this argument applies only on Windows agents)
 
 - script: |
     echo "Starting pipeline..."
     echo "Current directory is:"
     pwd
+    #echo "python version is"
+    python --version
+    #echo "pip version is"
+    pip --version
     #echo "pipenv version is"
     pipenv --version
     #echo "Updating packages..."
@@ -33,8 +33,8 @@ steps:
     #sudo apt install python3-pip
     #echo "Installing runway..."
     #pip install runway
-    echo "Runway version is:"
-    runway --version
+    #echo "Runway version is:"
+    #runway --version
     echo 'Changing directory to $(cloud_provider), ${service_name}, ${environment}'
     cd \runway\multicloud\aws\demo-service-1\dev\
     echo "Setting CI variable..."
@@ -43,3 +43,9 @@ steps:
     #runway deploy
 
   displayName: 'Run a multi-line script'
+
+- script: python -m pipenv lock -r > requirements.txt
+  displayName: 'Create requirements.txt from Pipfile'
+
+- script: pip install -r requirements.txt
+  displayName: 'Install requirements.txt'
