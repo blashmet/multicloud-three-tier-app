@@ -67,7 +67,7 @@ steps:
     pwd
 
     echo 'Changing directory to ${cloud_provider}\${service_name}\${environment}'
-    cd (Build.Repository.LocalPath)/runway/multicloud/aws/demo-service-1/dev
+    cd $(Build.Repository.LocalPath)/runway/multicloud/aws/demo-service-1/dev
 
     echo "Runway version is:"
     pipenv run runway --version
