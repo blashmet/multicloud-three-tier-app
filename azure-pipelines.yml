@@ -55,6 +55,6 @@ steps:
     pipenv run runway --version
     #runway deploy
 
-  workingDirectory: $(Build.Repository.LocalPath)/runway/multicloud/aws/demo-service-1/dev/
+  workingDirectory: $(Build.Repository.LocalPath)/runway/
 
   displayName: 'Run runway command in ${cloud_provider}\${service_name}\${environment}'
