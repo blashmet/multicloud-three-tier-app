@@ -50,11 +50,11 @@ steps:
     echo "pipenv version is"
     pipenv --version
 
-    echo "Generating requirements.txt"
-    pipenv lock -r > requirements.txt
+    #echo "Generating requirements.txt"
+    #pipenv lock -r > requirements.txt
 
-    echo "Installing dependencies..."
-    pip install -r requirements.txt
+    #echo "Installing dependencies..."
+    #pip install -r requirements.txt
     echo "Syncing python virtual env"
     pipenv sync
 
@@ -68,6 +68,9 @@ steps:
 
     echo 'Changing directory to ${cloud_provider}\${service_name}\${environment}'
     cd $(Build.Repository.LocalPath)/runway/multicloud/aws/demo-service-1/dev
+
+    echo "Current directory is:"
+    pwd
 
     echo "Runway version is:"
     pipenv run runway --version
