@@ -63,12 +63,14 @@ steps:
     echo 'CI variable is:($null = interactive, 1 = CI\CD)'
     echo "$CI"
 
-    echo "Changing directory to ${cloud_provider}\${service_name}\${environment}"
-    cd /multicloud/aws/demo-service-1/dev
+    echo "Current directory is:"
+    pwd
+
+    echo 'Changing directory to ${cloud_provider}\${service_name}\${environment}'
+    cd (Build.Repository.LocalPath)/runway/multicloud/aws/demo-service-1/dev
 
     echo "Runway version is:"
     pipenv run runway --version
-
 
     echo "Running pipenv run runway deploy in ${cloud_provider}\${service_name}\${environment}"
     pipenv run runway deploy
