@@ -78,7 +78,7 @@ steps:
     echo "Current directory is:"
     pwd
 
-    echo "Running pipenv run runway deploy in ${cloud_provider}\${service_name}\${environment}"
+    echo "Running runway deploy in ${cloud_provider}\${service_name}\${environment}"
     runway deploy
 
   workingDirectory: $(Build.Repository.LocalPath)/runway/
