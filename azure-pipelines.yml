@@ -27,11 +27,14 @@ steps:
     echo "pip version is"
     pip --version
 
-    echo "installing pipenv"
-    pip install pipenv
+    #echo "installing pipenv"
+    #pip install pipenv
 
-    echo "pipenv version is"
-    pipenv --version
+    #echo "pipenv version is"
+    #pipenv --version
+
+    echo "Installing runway..."
+    pip install runway==1.6.0
 
   displayName: 'Verify Python install and install pipenv.'
 
@@ -47,16 +50,19 @@ steps:
     echo "pip version is"
     pip --version
 
-    echo "pipenv version is"
-    pipenv --version
+    echo "runway version is"
+    runway --version
+
+    #echo "pipenv version is"
+    #pipenv --version
 
     #echo "Generating requirements.txt"
     #pipenv lock -r > requirements.txt
 
     #echo "Installing dependencies..."
     #pip install -r requirements.txt
-    echo "Syncing python virtual env"
-    pipenv sync
+    #echo "Syncing python virtual env"
+    #pipenv sync
 
     echo "Setting CI variable..."
     export CI=1
@@ -72,11 +78,8 @@ steps:
     echo "Current directory is:"
     pwd
 
-    echo "Runway version is:"
-    pipenv run runway --version
-
     echo "Running pipenv run runway deploy in ${cloud_provider}\${service_name}\${environment}"
-    pipenv run runway deploy
+    runway deploy
 
   workingDirectory: $(Build.Repository.LocalPath)/runway/
 
