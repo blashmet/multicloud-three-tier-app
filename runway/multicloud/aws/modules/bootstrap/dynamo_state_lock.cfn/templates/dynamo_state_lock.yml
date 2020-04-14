@@ -1,21 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
-Conditions:
-  BucketNameOmitted: !Or
-    - !Equals
-      - !Ref 'BucketName'
-      - ''
-    - !Equals
-      - !Ref 'BucketName'
-      - undefined
-  TableNameOmitted: !Or
-    - !Equals
-      - !Ref 'TableName'
-      - ''
-    - !Equals
-      - !Ref 'TableName'
-      - undefined
-
 Description: Terraform State Resources
 
 Parameters:
@@ -30,9 +14,15 @@ Parameters:
     Description: (optional) Name for the DynamoDB table
     Type: String
 
+  S3CleanupLambdaArn:
+    Description: Lambda to cleanup buckets before deletion.
+    Type: String
+  
+
 Resources:
 
   ManagementPolicy:
+    Type: AWS::IAM::ManagedPolicy
     Properties:
       Description: Managed policy for Terraform state management.
       Path: /
@@ -60,26 +50,27 @@ Resources:
             Resource:
               - !GetAtt 'TerraformStateTable.Arn'
         Version: '2012-10-17'
-    Type: AWS::IAM::ManagedPolicy
+    
   
   TerraformStateBucket:
-    DeletionPolicy: Delete
-    Properties:
-      AccessControl: Private
-      BucketName: !If
-        - BucketNameOmitted
-        - !Ref 'AWS::NoValue'
-        - !Ref 'BucketName'
-      LifecycleConfiguration:
-        Rules:
-          - NoncurrentVersionExpirationInDays: 90
-            Status: Enabled
-      VersioningConfiguration:
-        Status: Enabled
     Type: AWS::S3::Bucket
+    
+    Properties:
+        AccessControl: Private
+        BucketName: !Ref BucketName
+        LifecycleConfiguration:
+          Rules:
+            - NoncurrentVersionExpirationInDays: 90
+              Status: Enabled
+        VersioningConfiguration:
+          Status: Enabled
+    DeletionPolicy: Delete
+    
   
   TerraformStateTable:
+    Type: AWS::DynamoDB::Table
     Properties:
+      TableName: !Ref 'TableName'
       AttributeDefinitions:
         - AttributeName: LockID
           AttributeType: S
@@ -89,11 +80,16 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 2
         WriteCapacityUnits: 2
-      TableName: !If
-        - TableNameOmitted
-        - !Ref 'AWS::NoValue'
-        - !Ref 'TableName'
-    Type: AWS::DynamoDB::Table
+          
+
+  CleanupBucketOnDelete:
+    Type: Custom::CustomCleanupBucketResource
+    Properties:
+      ServiceToken: !Ref S3CleanupLambdaArn
+      BucketName: !Ref TerraformStateBucket
+    DependsOn: TerraformStateBucket
+
+
 
 Outputs:
 

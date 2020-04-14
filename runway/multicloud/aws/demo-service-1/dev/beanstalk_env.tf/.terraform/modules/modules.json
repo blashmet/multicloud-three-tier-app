@@ -1,1 +1,1 @@
-{"Modules":[{"Key":"beanstalk_env","Source":"../../../modules/beanstalk/beanstalk_env.tf","Dir":"../../../modules/beanstalk/beanstalk_env.tf"},{"Key":"","Source":"","Dir":"."}]}
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"beanstalk_env","Source":"../../../modules/beanstalk/beanstalk_env.tf","Dir":"../../../modules/beanstalk/beanstalk_env.tf"}]}

@@ -1,1 +1,1 @@
-{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"vpc","Source":"../../../modules/network/vpc.tf","Dir":"../../../modules/network/vpc.tf"}]}
+{"Modules":[{"Key":"vpc","Source":"../../../modules/network/vpc.tf","Dir":"../../../modules/network/vpc.tf"},{"Key":"","Source":"","Dir":"."}]}

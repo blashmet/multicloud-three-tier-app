@@ -6,6 +6,9 @@ Parameters:
     Description: Select VPC.
     Type: String
 
+  S3CleanupLambdaArn:
+    Description: Select VPC.
+    Type: String
 
 Resources:
 
@@ -13,6 +16,14 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref BucketName
+
+
+  CleanupBucketOnDelete:
+    Type: Custom::CustomCleanupBucketResource
+    Properties:
+      ServiceToken: !Ref S3CleanupLambdaArn
+      BucketName: !Ref SourceBundleBucket
+    DependsOn: SourceBundleBucket
       
 Outputs:
 

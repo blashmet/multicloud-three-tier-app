@@ -6,7 +6,11 @@ deployments:
   - name: aws-us-west-1-dev
 
     modules:
-        - name: dynamo-state-lock
+        
+        - name: s3_cleanup_lambda
+          path: s3_cleanup_lambda.cfn
+        
+        - name: dynamo_state_lock
           path: dynamo_state_lock.cfn
 
         - name: vpc
@@ -54,7 +58,6 @@ deployments:
               bucket: aws-us-west-1-dev-security-groups-tf-state::TerraformStateBucketName
               dynamodb_table: aws-us-west-1-dev-security-groups-tf-state::TerraformStateTableName
 
-
         - name: rds
           path: rds.tf
           options:
@@ -64,7 +67,7 @@ deployments:
               bucket: aws-us-west-1-dev-rds-tf-state::TerraformStateBucketName
               dynamodb_table: aws-us-west-1-dev-rds-tf-state::TerraformStateTableName
 
-        - name: beanstalk-app
+        - name: beanstalk_app
           path: beanstalk_app.tf
           options:
             terraform_backend_config:
@@ -100,6 +103,10 @@ deployments:
   - name: aws-us-east-2-dev
 
     modules:
+
+        - name: s3_cleanup_lambda
+          path: s3_cleanup_lambda.cfn
+
         - name: dynamo_state_lock
           path: dynamo_state_lock.cfn
 

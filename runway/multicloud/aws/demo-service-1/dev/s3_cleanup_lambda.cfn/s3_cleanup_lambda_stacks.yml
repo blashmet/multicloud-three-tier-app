@@ -1,13 +1,13 @@
 namespace: ${namespace}
 cfngin_bucket: ${cfngin_bucket_name}
+
 sys_path: ../../../modules/cleanup/cfngin_bucket_cleanup.cfn/
 
 stacks:
-
-  rds-secret:
-    template_path: ../../../modules/security/secrets.cfn/templates/secrets.yml
+  s3-cleanup-lambda:
+    template_path: ../../../modules/bootstrap/s3_cleanup_lambda.cfn/templates/s3_cleanup_lambda.yml
     variables:
-      SecretName: ${rds_secret_name}
+      FunctionName: ${function_name}
 
 
 post_destroy:
