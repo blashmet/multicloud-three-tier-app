@@ -18,7 +18,7 @@ Purpose/Change: Creating new environment in a multicloud project.
 
 #>
 
-[CmdletBinding()]
+function New-RunwayEnvironment{
 
     Param(
 
@@ -29,13 +29,60 @@ Purpose/Change: Creating new environment in a multicloud project.
         [string] $NewEnvironment
     )
 
-
 #Copy existing environment folders\files to new environment folder
 
+#For testing
+##$CurrentEnvironment = "dev"
+##$NewEnvironment = "qa"
+
+#Gets current working directory, should be environment directory if using the module correctly.
 $SourceRoot = (Get-Location).Path
 
-$DestinationRoot = ..\\$SourceRoot\\$NewEnvironment
+#Defines destination root as the parent directory of the current working directory.
+#Intended to create a new environment directory in the same parent directory as the current environment.
+$DestinationRoot = ((Get-Item -Path $SourceRoot | Select-Object Parent).Parent).FullName + "\" + $NewEnvironment
 
-Copy-Item -Path $SourceRoot -Recurse -Destination $DestinationRoot -WhatIf
+#Create the new environment directory if it does not exist.
+if(!(Test-Path $DestinationRoot)) {New-Item $DestinationRoot -ItemType Directory -Force}
 
-Get-ChildItem ("*" + $OldEnvironment + "*") -Recurse | Rename-Item -NewName { $_.Name -replace $CurrentEnvironment,$NewEnvironment } -WhatIf
+#Copy all folders and files from the current environment directory to the new one.
+Copy-Item -Path "$SourceRoot\*" -Recurse -Destination $DestinationRoot
+
+#Change to the new environment directory 
+cd $DestinationRoot
+
+#Rename all environment variable files with the new environment name.
+Get-ChildItem ("*" + $CurrentEnvironment + "*") -Recurse | Rename-Item -NewName { $_.Name -replace $CurrentEnvironment, $NewEnvironment} -Verbose
+
+#Get file list and replace instances of old environment with instances of new environment. Ignore .terraform folders.
+$FileList = @(Get-ChildItem -File -Recurse  | Where-Object { ($_.FullName -NotMatch ".terraform") -and ($_.FullName -NotMatch ".zip") -and ($_.FullName -NotMatch "hooks") }).FullName
+
+Write-Host "File List is:"
+
+$FileList
+
+ForEach ($File in $FileList)
+
+    {
+
+        try{
+        
+            $FileContent = [System.IO.File]::ReadAllText($File).Replace("$CurrentEnvironment","$NewEnvironment")
+
+            [System.IO.File]::WriteAllText($File, $FileContent)
+
+        }
+
+        catch{
+
+            Write-Host "Exception is:"
+            $_.Exception.Message
+
+            Write-Host "Item is:"
+            $FailedItem = $_.Exception.ItemName
+
+        }
+
+    }
+
+}

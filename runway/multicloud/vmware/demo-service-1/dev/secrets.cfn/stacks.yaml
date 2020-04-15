@@ -1,0 +1,21 @@
+namespace: ${namespace}
+cfngin_bucket: ${cfngin_bucket_name}
+sys_path: ../../../modules/cleanup/cfngin_bucket_cleanup.cfn/
+
+stacks:
+
+  rds-secret:
+    template_path: ../../../modules/security/secrets.cfn/templates/secrets.yml
+    variables:
+      SecretName: ${rds_secret_name}
+
+
+post_destroy:
+
+  empty_bucket:
+    
+    path:  hooks.empty_bucket.empty_source_bucket
+    args:
+      cfngin_bucket_name: ${cfngin_bucket_name}           
+      
+    enabled: true

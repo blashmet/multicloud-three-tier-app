@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters:
+
+  BucketName:
+    Description: Select VPC.
+    Type: String
+
+  S3CleanupLambdaArn:
+    Description: Select VPC.
+    Type: String
+
+Resources:
+
+  SourceBundleBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+
+
+  CleanupBucketOnDelete:
+    Type: Custom::CustomCleanupBucketResource
+    Properties:
+      ServiceToken: !Ref S3CleanupLambdaArn
+      BucketName: !Ref SourceBundleBucket
+    DependsOn: SourceBundleBucket
+      
+Outputs:
+
+  SourceBundleBucket:
+    Description: S3 bucket for source bundles.
+    Value: !Ref SourceBundleBucket
+    Export:
+      Name: SourceBundleBucket

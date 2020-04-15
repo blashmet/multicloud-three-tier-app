@@ -1,0 +1,6 @@
+region = "us-west-1"
+environment = "dev"
+tf_state_vpc_bucket_name = "aws-us-west-1-dev-vpc-tf-state-bucket"
+tf_state_vpc_key_name = "env:/dev/vpc-dev.tfstate"
+tf_state_gateways_bucket_name = "aws-us-west-1-dev-gateways-tf-state-bucket"
+tf_state_gateways_key_name = "env:/dev/gateways-dev.tfstate"

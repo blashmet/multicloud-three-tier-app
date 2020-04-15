@@ -1,0 +1,21 @@
+namespace: ${namespace}
+cfngin_bucket: ${cfngin_bucket_name}
+
+sys_path: ../../../modules/cleanup/cfngin_bucket_cleanup.cfn/
+
+stacks:
+  s3-cleanup-lambda:
+    template_path: ../../../modules/bootstrap/s3_cleanup_lambda.cfn/templates/s3_cleanup_lambda.yml
+    variables:
+      FunctionName: ${function_name}
+
+
+post_destroy:
+
+  empty_bucket:
+    
+    path:  hooks.empty_bucket.empty_source_bucket
+    args:
+      cfngin_bucket_name: ${cfngin_bucket_name}           
+      
+    enabled: true

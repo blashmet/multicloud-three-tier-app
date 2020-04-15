@@ -1,0 +1,24 @@
+namespace: ${namespace}
+cfngin_bucket: ${cfngin_bucket_name}
+sys_path: ../../../modules/cleanup/cfngin_bucket_cleanup.cfn/
+
+
+stacks:
+  ec2-key:
+    template_path: ../../../modules/security/ec2_keys.cfn/templates/ec2_keys.yml  
+    variables:     
+      KeyPairName: ${keypair_name}
+      PrivateKeyName: ${private_key_name}
+
+
+post_destroy:
+
+  empty_bucket:
+    
+    path:  hooks.empty_bucket.empty_source_bucket
+    args:
+      cfngin_bucket_name: ${cfngin_bucket_name}           
+      
+    enabled: true
+
+      
