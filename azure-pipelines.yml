@@ -18,76 +18,77 @@ steps:
     addToPath: true 
     #architecture: 'x64' # Options: x86, x64 (this argument applies only on Windows agents)
 
-- script: |
+- task: AWSShellScript@1
+  inputs:
+    awsCredentials: 'vCORE AWS Lab' # Serivce connection name
+    regionName: 'us-west-1'
+    scriptType: 'inline'
+    inlineScript: |
+      
+      echo "Starting pipeline..."
+      echo "Current directory is:"
+      pwd
 
-    echo "Starting pipeline..."
-    echo "Current directory is:"
-    pwd
+      echo "python version is"
+      python --version
 
-    echo "python version is"
-    python --version
+      echo "pip version is"
+      pip --version
 
-    echo "pip version is"
-    pip --version
+      #echo "installing pipenv"
+      #pip install pipenv
 
-    #echo "installing pipenv"
-    #pip install pipenv
+      #echo "pipenv version is"
+      #pipenv --version
 
-    #echo "pipenv version is"
-    #pipenv --version
+      echo "Installing runway..."
+      pip install runway==1.6.0
 
-    echo "Installing runway..."
-    pip install runway==1.6.0
+      echo "Starting pipeline..."
+      echo "Current directory is:"
+      pwd
 
-  displayName: 'Verify Python install and install pipenv.'
+      echo "python version is"
+      python --version
 
-- script: |
+      echo "pip version is"
+      pip --version
 
-    echo "Starting pipeline..."
-    echo "Current directory is:"
-    pwd
+      echo "runway version is"
+      runway --version
 
-    echo "python version is"
-    python --version
+      #echo "pipenv version is"
+      #pipenv --version
 
-    echo "pip version is"
-    pip --version
+      #echo "Generating requirements.txt"
+      #pipenv lock -r > requirements.txt
 
-    echo "runway version is"
-    runway --version
+      #echo "Installing dependencies..."
+      #pip install -r requirements.txt
+      #echo "Syncing python virtual env"
+      #pipenv sync
 
-    #echo "pipenv version is"
-    #pipenv --version
+      echo "Setting CI variable..."
+      export CI=1
+      echo 'CI variable is:($null = interactive, 1 = CI\CD)'
+      echo "$CI"
 
-    #echo "Generating requirements.txt"
-    #pipenv lock -r > requirements.txt
+      echo "Current directory is:"
+      pwd
 
-    #echo "Installing dependencies..."
-    #pip install -r requirements.txt
-    #echo "Syncing python virtual env"
-    #pipenv sync
+      echo 'Changing directory to ${cloud_provider}\${service_name}\${environment}'
+      cd $(Build.Repository.LocalPath)/runway/multicloud/aws/demo-service-1/dev
 
-    echo "Setting CI variable..."
-    export CI=1
-    echo 'CI variable is:($null = interactive, 1 = CI\CD)'
-    echo "$CI"
+      echo "Current directory is:"
+      pwd
 
-    echo "Current directory is:"
-    pwd
+      echo "Setting AWS Auth"
+      export AWS_ACCESS_KEY_ID=$(AK)
+      export AWS_SECRET_ACCESS_KEY=$(SK)
 
-    echo 'Changing directory to ${cloud_provider}\${service_name}\${environment}'
-    cd $(Build.Repository.LocalPath)/runway/multicloud/aws/demo-service-1/dev
+      echo "Running runway deploy in ${cloud_provider}\${service_name}\${environment}"
+      runway deploy
 
-    echo "Current directory is:"
-    pwd
+    workingDirectory: $(Build.Repository.LocalPath)/runway/
 
-    echo "Setting AWS Auth"
-    export AWS_ACCESS_KEY_ID=$(AK)
-    export AWS_SECRET_ACCESS_KEY=$(SK)
-
-    echo "Running runway deploy in ${cloud_provider}\${service_name}\${environment}"
-    runway deploy
-
-  workingDirectory: $(Build.Repository.LocalPath)/runway/
-
-  displayName: 'Run runway command in ${cloud_provider}\${service_name}\${environment}'
+    displayName: 'Run runway command in ${cloud_provider}\${service_name}\${environment}'
