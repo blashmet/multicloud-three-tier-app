@@ -9,6 +9,7 @@ pool:
 
 variables:
   - group: aws-ak-sk
+  - group: namespace-vars
 
 steps:
 
@@ -87,6 +88,6 @@ steps:
       #export AWS_SECRET_ACCESS_KEY=$(SK)
 
       echo "Running runway deploy in ${cloud_provider}\${service_name}\${environment}"
-      runway deploy
+      runway plan
 
     workingDirectory: $(Build.Repository.LocalPath)/runway/
