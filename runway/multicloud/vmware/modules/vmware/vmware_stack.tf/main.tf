@@ -40,7 +40,7 @@ resource "vsphere_virtual_machine" "app_server_vm" {
   }
 }
 
-resource "vsphere_virtual_machine" "app_server_vm" {
+resource "vsphere_virtual_machine" "db_server_vm" {
 
   name             = var.db_server_name
   resource_pool_id = data.vsphere_resource_pool.pool.id
@@ -61,3 +61,43 @@ resource "vsphere_virtual_machine" "app_server_vm" {
 }
 
 #NSX-T RESOURCES
+
+data "nsxt_edge_cluster" "EC" {
+  display_name = "%s"
+}
+
+data "nsxt_logical_tier0_router" "test" {
+  display_name = "%s"
+}
+
+resource "nsxt_logical_router_link_port_on_tier0" "test" {
+  display_name      = "port_on_tier0"
+  logical_router_id = "${data.nsxt_logical_tier0_router.test.id}"
+}
+
+resource "nsxt_logical_tier1_router" "test" {
+  display_name    = "test"
+  edge_cluster_id = "${data.nsxt_edge_cluster.EC.id}"
+}
+
+resource "nsxt_logical_router_link_port_on_tier1" "test" {
+  logical_router_id             = "${nsxt_logical_tier1_router.test.id}"
+  linked_logical_router_port_id = "${nsxt_logical_router_link_port_on_tier0.test.id}"
+}
+
+resource "nsxt_lb_service" "lb_service" {
+  description  = "lb_service provisioned by Terraform"
+  display_name = "lb_service"
+
+  tag {
+    scope = "color"
+    tag   = "red"
+  }
+
+  enabled           = true
+  logical_router_id = "${nsxt_logical_tier1_router.test.id}"
+  error_log_level   = "INFO"
+  size              = "MEDIUM"
+
+  depends_on        = ["nsxt_logical_router_link_port_on_tier1.test"]
+}
