@@ -35,7 +35,7 @@ steps:
       echo "Service is: $(service)"
       echo "Environment is: $(environment)"
       echo "Region is: $(region)"
-      echo "Module is: $(module)""
+      echo "Module is: $(module)"
       
 
       echo "python version is"
