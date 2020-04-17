@@ -86,7 +86,7 @@ steps:
       pwd
 
       echo 'Changing directory to helper modules directory'
-      cd $(Build.Repository.LocalPath)/scripts/
+      cd $(Build.Repository.LocalPath)/runway/scripts/
       Import-Module InitializeTerraformWorkspace
 
       echo 'Changing directory to $(cloud_provider)\$(module)\$(environment)'
