@@ -19,85 +19,85 @@ steps:
     addToPath: true 
     #architecture: 'x64' # Options: x86, x64 (this argument applies only on Windows agents)
 
-- task: AWSShellScript@1
+- task: AWSPowerShellModuleScript@1
   inputs:
-    awsCredentials: 'vCORE AWS Lab' # Serivce connection name
+    awsCredentials: 'vCORE AWS Lab'
     regionName: $(region)
     scriptType: 'inline'
     inlineScript: |
+      # You can write your powershell script inline here (the AWSPowerShell module will be imported automatically).
       
-      echo "Starting pipeline..."
-      echo "Current directory is:"
-      pwd
-
-      echo "Variable group test:"
-      echo "Cloud provider is: $(cloud_provider)"
-      echo "Service is: $(service)"
-      echo "Environment is: $(environment)"
-      echo "Region is: $(region)"
-      echo "Module is: $(module)"
+            echo "Starting pipeline..."
+            echo "Current directory is:"
+            pwd
       
-
-      echo "python version is"
-      python --version
-
-      echo "pip version is"
-      pip --version
-
-      #echo "installing pipenv"
-      #pip install pipenv
-
-      #echo "pipenv version is"
-      #pipenv --version
-
-      echo "Installing runway..."
-      pip install runway==1.6.0
-
-      echo "Starting pipeline..."
-      echo "Current directory is:"
-      pwd
-
-      echo "python version is"
-      python --version
-
-      echo "pip version is"
-      pip --version
-
-      echo "runway version is"
-      runway --version
-
-      #echo "pipenv version is"
-      #pipenv --version
-
-      #echo "Generating requirements.txt"
-      #pipenv lock -r > requirements.txt
-
-      #echo "Installing dependencies..."
-      #pip install -r requirements.txt
-      #echo "Syncing python virtual env"
-      #pipenv sync
-
-      echo "Setting CI variable..."
-      export CI=1
-      echo 'CI variable is:($null = interactive, 1 = CI\CD)'
-      echo "$CI"
-
-      echo "Current directory is:"
-      pwd
-
-      echo 'Changing directory to helper modules directory'
-      cd $(Build.Repository.LocalPath)/runway/scripts/
-      Import-Module InitializeTerraformWorkspace
-
-      echo 'Changing directory to $(cloud_provider)\$(module)\$(environment)'
-      cd $(Build.Repository.LocalPath)/runway/multicloud/$(cloud_provider)/$(service)/$(environment)
-      Initialize-TerraformWorkspace -Environment $(environment) -AllModules $true
-
-      echo "Current directory is:"
-      pwd
-
-
-      echo "Running runway plan in $(cloud_provider)\$(module)\$(environment)"
-      runway plan
-
-    workingDirectory: $(Build.Repository.LocalPath)/runway/
+            echo "Variable group test:"
+            echo "Cloud provider is: $(cloud_provider)"
+            echo "Service is: $(service)"
+            echo "Environment is: $(environment)"
+            echo "Region is: $(region)"
+            echo "Module is: $(module)"
+            
+      
+            echo "python version is"
+            python --version
+      
+            echo "pip version is"
+            pip --version
+      
+            #echo "installing pipenv"
+            #pip install pipenv
+      
+            #echo "pipenv version is"
+            #pipenv --version
+      
+            echo "Installing runway..."
+            pip install runway==1.6.0
+      
+            echo "Starting pipeline..."
+            echo "Current directory is:"
+            pwd
+      
+            echo "python version is"
+            python --version
+      
+            echo "pip version is"
+            pip --version
+      
+            echo "runway version is"
+            runway --version
+      
+            #echo "pipenv version is"
+            #pipenv --version
+      
+            #echo "Generating requirements.txt"
+            #pipenv lock -r > requirements.txt
+      
+            #echo "Installing dependencies..."
+            #pip install -r requirements.txt
+            #echo "Syncing python virtual env"
+            #pipenv sync
+      
+            echo "Setting CI variable..."
+            export CI=1
+            echo 'CI variable is:($null = interactive, 1 = CI\CD)'
+            echo "$CI"
+      
+            echo "Current directory is:"
+            pwd
+      
+            echo 'Changing directory to helper modules directory'
+            cd $(Build.Repository.LocalPath)/runway/scripts/
+            Import-Module InitializeTerraformWorkspace
+      
+            echo 'Changing directory to $(cloud_provider)\$(module)\$(environment)'
+            cd $(Build.Repository.LocalPath)/runway/multicloud/$(cloud_provider)/$(service)/$(environment)
+            Initialize-TerraformWorkspace -Environment $(environment) -AllModules $true
+      
+            echo "Current directory is:"
+            pwd
+      
+      
+            echo "Running runway plan in $(cloud_provider)\$(module)\$(environment)"
+            runway plan
+    workingDirectory: '$(Build.Repository.LocalPath)/runway/'
