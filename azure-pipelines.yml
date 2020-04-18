@@ -97,7 +97,7 @@ steps:
             echo "Importing InitializeTerraformWorkspace module..."
             Import-Module .\scripts\InitializeTerraformWorkspace
       
-            echo 'Changing directory to $(cloud_provider)\$(module)\$(environment)'
+            echo 'Changing directory to $(cloud_provider)\$(service)\$(environment)'
             cd $(Build.Repository.LocalPath)\runway\multicloud\$(cloud_provider)\$(service)\$(environment)
             echo "Current directory is:"
             (pwd).Path

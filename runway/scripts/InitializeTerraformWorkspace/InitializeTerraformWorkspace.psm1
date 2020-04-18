@@ -49,7 +49,7 @@ function Initialize-TerraformWorkspace{
     #Load available modules from runway.yml
     $AvailableModules = @($YamlPSObject.Deployments.modules.path)
 
-    $AvailableModules = $AvailableModules | Select-Object -Unique
+    $AvailableModules = $AvailableModules | Select-Object -Unique | Where-Object {$_ -match ".tf"}
 
         if($AllModules -eq $true)
 
