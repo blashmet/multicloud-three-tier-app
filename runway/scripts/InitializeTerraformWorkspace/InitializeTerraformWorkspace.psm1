@@ -60,6 +60,8 @@ function Initialize-TerraformWorkspace{
                     {
 
                         cd $module
+                        Write-Host "Current directory is..."
+                        Write-Host $(pwd).Path
 
                         try{
 
