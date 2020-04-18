@@ -84,18 +84,17 @@ steps:
       
             echo "Current directory is:"
             (pwd).Path
-      
-            echo 'Changing directory to helper modules directory'
-            cd $(Build.Repository.LocalPath)\runway\scripts\
-            Import-Module InitializeTerraformWorkspace
+            echo "Importing InitializeTerraformWorkspace module..."
+            Import-Module .\scripts\InitializeTerraformWorkspace
       
             echo 'Changing directory to $(cloud_provider)\$(module)\$(environment)'
             cd $(Build.Repository.LocalPath)\runway\multicloud\$(cloud_provider)\$(service)\$(environment)
+            echo "Current directory is:"
+            (pwd).Path
             Initialize-TerraformWorkspace -Environment $(environment) -AllModules $true
       
             echo "Current directory is:"
             (pwd).Path
-      
       
             echo "Running runway plan in $(cloud_provider)\$(module)\$(environment)"
             runway plan
