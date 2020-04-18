@@ -65,7 +65,10 @@ function Initialize-TerraformWorkspace{
 
                         try{
 
-                            terraform workspace new $Environment; terraform workspace select $Environment; terraform init
+                            #terraform workspace new $Environment; terraform workspace select $Environment;
+                            #terraform init
+                            Write-Host "Not running any terraform commands yet, testing runway plan without them..."
+                            Write-Host "Module is $module"
                             cd ..
 
                         }
