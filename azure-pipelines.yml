@@ -78,8 +78,8 @@ steps:
             #pipenv sync
       
             echo "Setting CI variable..."
-            export CI=1
-            echo 'CI variable is:($null = interactive, 1 = CI\CD)'
+            $env:CI="1"
+            echo 'CI variable is:($null = interactive, 1 = CI)'
             echo "$CI"
       
             echo "Current directory is:"
