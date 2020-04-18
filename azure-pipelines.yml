@@ -29,7 +29,7 @@ steps:
       
             echo "Starting pipeline..."
             echo "Current directory is:"
-            pwd
+            (pwd).Path
       
             echo "Variable group test:"
             echo "Cloud provider is: $(cloud_provider)"
@@ -38,7 +38,6 @@ steps:
             echo "Region is: $(region)"
             echo "Module is: $(module)"
             
-      
             echo "python version is"
             python --version
       
@@ -54,9 +53,9 @@ steps:
             echo "Installing runway..."
             pip install runway==1.6.0
       
-            echo "Starting pipeline..."
+            echo "Runway installed."
             echo "Current directory is:"
-            pwd
+            (pwd).Path
       
             echo "python version is"
             python --version
@@ -84,20 +83,20 @@ steps:
             echo "$CI"
       
             echo "Current directory is:"
-            pwd
+            (pwd).Path
       
             echo 'Changing directory to helper modules directory'
-            cd $(Build.Repository.LocalPath)/runway/scripts/
+            cd $(Build.Repository.LocalPath)\runway\scripts\
             Import-Module InitializeTerraformWorkspace
       
             echo 'Changing directory to $(cloud_provider)\$(module)\$(environment)'
-            cd $(Build.Repository.LocalPath)/runway/multicloud/$(cloud_provider)/$(service)/$(environment)
+            cd $(Build.Repository.LocalPath)\runway\multicloud\$(cloud_provider)\$(service)\$(environment)
             Initialize-TerraformWorkspace -Environment $(environment) -AllModules $true
       
             echo "Current directory is:"
-            pwd
+            (pwd).Path
       
       
             echo "Running runway plan in $(cloud_provider)\$(module)\$(environment)"
             runway plan
-    workingDirectory: '$(Build.Repository.LocalPath)/runway/'
+    workingDirectory: '$(Build.Repository.LocalPath)\runway\'
