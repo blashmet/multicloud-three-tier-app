@@ -51,9 +51,15 @@ steps:
             #pipenv --version
       
             echo "Installing runway..."
-            pip install runway==1.6.0
-      
+            pip install runway==1.6.0      
             echo "Runway installed."
+
+
+
+            echo "Installing Terraform..."
+            pip install terraform-bin
+
+
             echo "Current directory is:"
             (pwd).Path
       
@@ -65,6 +71,10 @@ steps:
       
             echo "runway version is"
             runway --version
+
+
+            echo "Terraform version is"
+            terraform --version
       
             #echo "pipenv version is"
             #pipenv --version
