@@ -31,7 +31,8 @@ steps:
     inlineScript: |
             
             $NewLine = "`n"
-            Install-Module -Name PSWriteColor
+            Install-Module -Name PSWriteColor -Force
+
             Write-Color "Starting pipeline...$NewLine" -Color "Cyan"
             
             Write-Color "Current directory is:"  -Color "Yellow"; $NewLine
@@ -109,5 +110,5 @@ steps:
             runway plan
 
     workingDirectory: '$(Build.Repository.LocalPath)\runway\'
-    
+
     errorActionPreference: 'continue'
