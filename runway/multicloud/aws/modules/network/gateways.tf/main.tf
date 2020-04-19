@@ -6,15 +6,26 @@ data "terraform_remote_state" "vpc" {
     key = var.tf_state_vpc_key_name
     region = var.region
   }
+
+  defaults = {
+    vpc_id = ""
+    pub_sub_1_id = ""
+    pub_sub_2_id = ""
+    pri_sub_1_id = ""
+    pri_sub_2_id = ""
+  }
+
 }
 
 # RESOURCES
 resource "aws_internet_gateway" "igw" {
+
   vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id
 
   tags = {
     Name = "igw-${var.region}-${var.environment}"
   }
+  
 }
 
 resource "aws_eip" "ngw_eip" {

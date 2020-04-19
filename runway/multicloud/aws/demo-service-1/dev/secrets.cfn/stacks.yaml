@@ -2,6 +2,19 @@ namespace: ${namespace}
 cfngin_bucket: ${cfngin_bucket_name}
 sys_path: ../../../modules/cleanup/cfngin_bucket_cleanup.cfn/
 
+
+pre_build:
+
+  create_bucket:
+    
+    path:  hooks.create_bucket.create_cfngin_bucket
+    args:
+      cfngin_bucket_name: ${cfngin_bucket_name} 
+      region: ${region}          
+      
+    enabled: false
+
+
 stacks:
 
   rds-secret:

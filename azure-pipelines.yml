@@ -35,7 +35,7 @@ steps:
 
             Write-Color "Starting pipeline...$NewLine" -Color "Cyan"
             
-            Write-Color "Current directory is:"  -Color "Yellow"; $NewLine
+            Write-Color "Current directory is: ", "$((pwd).Path)" -Color "White", "Yellow"; $NewLine
             
             (pwd).Path; $NewLine
       
@@ -57,32 +57,25 @@ steps:
 
             Write-Color "Runway installed." -Color "Green"; $NewLine
 
-            Write-Color "Current directory is:" -Color "Yellow"; $NewLine
-            (pwd).Path
+            Write-Color "Current directory is: ", "$((pwd).Path)" -Color "White", "Yellow"; $NewLine
       
-            Write-Color "python version is:" -Color "Cyan"; $NewLine
-            python --version
+            Write-Color "Python version is: ", "$(python --version)" -Color "White", "Yellow"; $NewLine
       
-            Write-Color "pip version is" -Color "Cyan"; $NewLine
-            pip --version
+            Write-Color "pip version is: ", "$(pip --version)" -Color "White", "Yellow"; $NewLine
       
-            Write-Color "runway version is" -Color "Cyan"; $NewLine
-            runway --version
+            Write-Color "Runway version is: ", "$(runway --version)" -Color "White", "Yellow"; $NewLine
 
-            Write-Color "Terraform version is" -Color "Cyan"; $NewLine
-            terraform --version
+            Write-Color "Terraform version is: ", "$(terraform --version)" -Color "White", "Yellow"; $NewLine
       
             Write-Color "Setting CI variable..." -Color "Yellow"; $NewLine
 
-            $env:CI="1"
+            $env:CI="1"; $NewLine
 
             Write-Color "CI variable is:", "($null = interactive, 1 = CI)" -Color "White", "Magenta"
 
-            Write-Color "$CI" -Color "Green"
+            Write-Color "$CI" -Color "Green"; $NewLine
       
-            Write-Color "Current directory is:" -Color "Yellow"; $NewLine
-
-            (pwd).Path
+            Write-Color "Current directory is: ", "$((pwd).Path)" -Color "White", "Yellow"; $NewLine
 
             Write-Color "Importing InitializeTerraformWorkspace module..."  -Color "Yellow"; $NewLine
 
@@ -94,18 +87,17 @@ steps:
 
             cd $(Build.Repository.LocalPath)\runway\multicloud\$(cloud_provider)\$(service)\$(environment)
 
-            Write-Color "Current directory is:"  -Color "Yellow"; $NewLine
-
-            (pwd).Path
+            Write-Color "Current directory is: ", "$((pwd).Path)" -Color "White", "Yellow"; $NewLine
 
             Write-Color "Initializing Terraform workspaces for the selected modules"
            
             Initialize-TerraformWorkspace -Environment $(environment) -AllModules $true
       
-            Write-Color "Current directory is:" -Color "Yellow"; $NewLine
-            (pwd).Path
+            Write-Color "Current directory is: ", "$((pwd).Path)" -Color "White", "Yellow"; $NewLine
       
             Write-Color "Running runway plan in $(cloud_provider)\$(module)\$(environment)" -Color "Yellow"; $NewLine
+
+            Write-Host "Write-Host test" -ForegroundColor "Green"
 
             runway plan
 

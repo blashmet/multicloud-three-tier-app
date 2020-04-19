@@ -6,15 +6,34 @@ data "terraform_remote_state" "vpc" {
     key = var.tf_state_vpc_key_name
     region = var.region
   }
+
+    defaults = {
+    vpc_id = ""
+    pub_sub_1_id = ""
+    pub_sub_2_id = ""
+    pri_sub_1_id = ""
+    pri_sub_2_id = ""
+  }
+
 }
 
 data "terraform_remote_state" "gateways" {
   backend = "s3"
   config = {
+
     bucket = var.tf_state_gateways_bucket_name
     key = var.tf_state_gateways_key_name
     region = var.region
+    
   }
+
+  
+  defaults = {
+
+    igw_id = ""
+    ngw_id = ""
+  }
+
 }
 
 #RESOURCES

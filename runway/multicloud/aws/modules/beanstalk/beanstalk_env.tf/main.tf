@@ -6,6 +6,16 @@ data "terraform_remote_state" "vpc" {
     key = var.tf_state_vpc_key_name
     region = var.region
   }
+
+    defaults = {
+    vpc_id = ""
+    pub_sub_1_id = ""
+    pub_sub_2_id = ""
+    pri_sub_1_id = ""
+    pri_sub_2_id = ""
+  }
+
+
 }
 
 data "terraform_remote_state" "rds" {
@@ -15,6 +25,15 @@ data "terraform_remote_state" "rds" {
     key = var.tf_state_rds_key_name
     region = var.region
   }
+
+  defaults = {
+  
+    rds_endpoint = ""
+    rds_username = ""
+
+  }
+
+
 }
 
 data "terraform_remote_state" "beanstalk_app" {
@@ -23,6 +42,14 @@ data "terraform_remote_state" "beanstalk_app" {
     bucket = var.tf_state_beanstalk_app_bucket_name
     key = var.tf_state_beanstalk_app_key_name
     region = var.region
+  }
+
+  defaults = {
+
+    beanstalk_app_arn = ""
+    beanstalk_app_name = ""
+    
+
   }
 }
 
@@ -33,6 +60,15 @@ data "terraform_remote_state" "security_groups" {
     key = var.tf_state_security_groups_key_name
     region = var.region
   }
+
+  defaults = {
+
+    elb_sg_id = ""
+    ec2_sg_id = ""
+    rds_sg_id = ""
+    
+  }
+
 }
 
 #DATA
