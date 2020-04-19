@@ -9,12 +9,51 @@ deployments:
         
         - name: s3_cleanup_lambda
           path: s3_cleanup_lambda.cfn
+          tags:
+            - bootstrap-modules
+            - us-west-1
         
         - name: dynamo_state_lock
           path: dynamo_state_lock.cfn
+          tags:
+            - bootstrap-modules
+            - us-west-1
+
+        - name: secrets
+          path: secrets.cfn
+          tags:
+            - bootstrap-modules
+            - us-west-1
+
+        - name: ec2_key_provider
+          path: ec2_key_provider.cfn
+          tags:
+            - bootstrap-modules
+            - us-west-1
+
+        - name: ec2_keys
+          path: ec2_keys.cfn
+          tags:
+            - bootstrap-modules
+            - us-west-1
+ 
+        - name: beanstalk_source
+          path: beanstalk_source.cfn
+          tags:
+            - bootstrap-modules
+            - us-west-1
+          options:
+            terraform_backend_config:
+              region: us-west-1
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-west-1-dev-beanstalk-source-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-us-west-1-dev-beanstalk-source-tf-state::TerraformStateTableName
 
         - name: vpc
           path: vpc.tf
+          tags:
+            - tf-modules
+            - us-west-1
           options:
             terraform_backend_config:
               region: us-west-1
@@ -24,6 +63,9 @@ deployments:
 
         - name: gateways
           path: gateways.tf
+          tags:
+            - tf-modules
+            - us-west-1
           options:
             terraform_backend_config:
               region: us-west-1
@@ -33,6 +75,9 @@ deployments:
 
         - name: routes
           path: routes.tf
+          tags:
+            - tf-modules
+            - us-west-1
           options:
             terraform_backend_config:
               region: us-west-1
@@ -40,17 +85,11 @@ deployments:
               bucket: aws-us-west-1-dev-routes-tf-state::TerraformStateBucketName
               dynamodb_table: aws-us-west-1-dev-routes-tf-state::TerraformStateTableName
 
-        - name: secrets
-          path: secrets.cfn
-
-        - name: ec2_key_provider
-          path: ec2_key_provider.cfn
-
-        - name: ec2_keys
-          path: ec2_keys.cfn
-
         - name: security_groups
           path: security_groups.tf
+          tags:
+            - tf-modules
+            - us-west-1
           options:
             terraform_backend_config:
               region: us-west-1
@@ -60,6 +99,9 @@ deployments:
 
         - name: rds
           path: rds.tf
+          tags:
+            - tf-modules
+            - us-west-1
           options:
             terraform_backend_config:
               region: us-west-1
@@ -69,6 +111,9 @@ deployments:
 
         - name: beanstalk_app
           path: beanstalk_app.tf
+          tags:
+            - tf-modules
+            - us-west-1
           options:
             terraform_backend_config:
               region: us-west-1
@@ -76,23 +121,21 @@ deployments:
               bucket: aws-us-west-1-dev-beanstalk-app-tf-state::TerraformStateBucketName
               dynamodb_table: aws-us-west-1-dev-beanstalk-app-tf-state::TerraformStateTableName
 
-        - name: beanstalk_source
-          path: beanstalk_source.cfn
-          options:
-            terraform_backend_config:
-              region: us-west-1
-            terraform_backend_cfn_outputs:
-              bucket: aws-us-west-1-dev-beanstalk-source-tf-state::TerraformStateBucketName
-              dynamodb_table: aws-us-west-1-dev-beanstalk-source-tf-state::TerraformStateTableName
-
         - name: beanstalk_env
           path: beanstalk_env.tf
+          tags:
+            - tf-modules
+            - us-west-1
           options:
             terraform_backend_config:
               region: us-west-1
             terraform_backend_cfn_outputs:
               bucket: aws-us-west-1-dev-beanstalk-env-tf-state::TerraformStateBucketName
               dynamodb_table: aws-us-west-1-dev-beanstalk-env-tf-state::TerraformStateTableName
+    
+    env_vars:
+        TF_CLI_ARGS_plan: "-out tfplan"
+        CI: "enabled"
     
     regions:
       - us-west-1

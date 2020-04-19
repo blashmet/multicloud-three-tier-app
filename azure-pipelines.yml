@@ -73,7 +73,7 @@ steps:
 
             Write-Color "CI variable is:", "($null = interactive, 1 = CI)" -Color "White", "Magenta"
 
-            Write-Color "$CI" -Color "Green"; $NewLine
+            Write-Color "$env:CI" -Color "Green"; $NewLine
       
             Write-Color "Current directory is: ", "$((pwd).Path)" -Color "White", "Yellow"; $NewLine
 
@@ -99,7 +99,9 @@ steps:
 
             Write-Host "Write-Host test" -ForegroundColor "Green"
 
-            runway plan
+            runway deploy --tag "bootstrap-modules" --tag "us-west-1"
+
+            runway plan --tag "tf-modules" --tag "us-west-1"
 
     workingDirectory: '$(Build.Repository.LocalPath)\runway\'
 
