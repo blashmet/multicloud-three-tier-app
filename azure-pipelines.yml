@@ -19,98 +19,95 @@ steps:
     addToPath: true 
     #architecture: 'x64' # Options: x86, x64 (this argument applies only on Windows agents)
 
+- task: TerraformInstaller@0
+  inputs:
+    terraformVersion: '0.12.24'
+
 - task: AWSPowerShellModuleScript@1
   inputs:
     awsCredentials: 'vCORE AWS Lab'
     regionName: $(region)
     scriptType: 'inline'
     inlineScript: |
-      # You can write your powershell script inline here (the AWSPowerShell module will be imported automatically).
-      
-            echo "Starting pipeline..."
-            echo "Current directory is:"
-            (pwd).Path
-      
-            echo "Variable group test:"
-            echo "Cloud provider is: $(cloud_provider)"
-            echo "Service is: $(service)"
-            echo "Environment is: $(environment)"
-            echo "Region is: $(region)"
-            echo "Module is: $(module)"
             
-            echo "python version is"
-            python --version
+            $NewLine = "`n"
+            Install-Module -Name PSWriteColor
+            Write-Color "Starting pipeline...$NewLine" -Color "Cyan"
+            
+            Write-Color "Current directory is:"  -Color "Yellow"; $NewLine
+            
+            (pwd).Path; $NewLine
       
-            echo "pip version is"
-            pip --version
+            Write-Color "Variable group test:" -Color "Cyan"; $NewLine
+
+            Write-Color "Cloud provider is:", " $(cloud_provider)" -Color "White", "Magenta"; $NewLine
+
+            Write-Color "Service is:", "$(service)" -Color "White", "Magenta"; $NewLine
+
+            Write-Color "Environment is:", "$(environment)"  -Color "White", "Magenta"; $NewLine
+
+            Write-Color "Region is:", "$(region)" -Color "White", "Magenta"; $NewLine
+
+            Write-Color "Module is:","$(module)" -Color "White", "Magenta"; $NewLine
       
-            #echo "installing pipenv"
-            #pip install pipenv
-      
-            #echo "pipenv version is"
-            #pipenv --version
-      
-            echo "Installing runway..."
-            pip install runway==1.6.0      
-            echo "Runway installed."
+            Write-Color "Installing runway..." -Color "Cyan"; $NewLine
 
+            pip install runway==1.6.0
 
+            Write-Color "Runway installed." -Color "Green"; $NewLine
 
-            echo "Installing Terraform..."
-            pip install terraform-bin
-
-
-            echo "Current directory is:"
+            Write-Color "Current directory is:" -Color "Yellow"; $NewLine
             (pwd).Path
       
-            echo "python version is"
+            Write-Color "python version is:" -Color "Cyan"; $NewLine
             python --version
       
-            echo "pip version is"
+            Write-Color "pip version is" -Color "Cyan"; $NewLine
             pip --version
       
-            echo "runway version is"
+            Write-Color "runway version is" -Color "Cyan"; $NewLine
             runway --version
 
-
-            echo "Terraform version is"
+            Write-Color "Terraform version is" -Color "Cyan"; $NewLine
             terraform --version
       
-            #echo "pipenv version is"
-            #pipenv --version
-      
-            #echo "Generating requirements.txt"
-            #pipenv lock -r > requirements.txt
-      
-            #echo "Installing dependencies..."
-            #pip install -r requirements.txt
-            #echo "Syncing python virtual env"
-            #pipenv sync
-      
-            echo "Setting CI variable..."
+            Write-Color "Setting CI variable..." -Color "Yellow"; $NewLine
+
             $env:CI="1"
-            echo 'CI variable is:($null = interactive, 1 = CI)'
-            echo "$CI"
+
+            Write-Color "CI variable is:", "($null = interactive, 1 = CI)" -Color "White", "Magenta"
+
+            Write-Color "$CI" -Color "Green"
       
-            echo "Current directory is:"
+            Write-Color "Current directory is:" -Color "Yellow"; $NewLine
+
             (pwd).Path
-            echo "Importing InitializeTerraformWorkspace module..."
+
+            Write-Color "Importing InitializeTerraformWorkspace module..."  -Color "Yellow"; $NewLine
+
             Import-Module .\scripts\InitializeTerraformWorkspace
+
+            Write-Color "InitializeTerraformWorkspace module imported successfully"  -Color "Green"; $NewLine
       
-            echo 'Changing directory to $(cloud_provider)\$(service)\$(environment)'
+            Write-Color 'Changing directory to $(cloud_provider)\$(service)\$(environment)' -Color "Yellow"; $NewLine
+
             cd $(Build.Repository.LocalPath)\runway\multicloud\$(cloud_provider)\$(service)\$(environment)
-            echo "Current directory is:"
+
+            Write-Color "Current directory is:"  -Color "Yellow"; $NewLine
+
             (pwd).Path
 
-            echo "Initializing Terraform workspaces for the selected modules"
+            Write-Color "Initializing Terraform workspaces for the selected modules"
            
-
             Initialize-TerraformWorkspace -Environment $(environment) -AllModules $true
       
-            echo "Current directory is:"
+            Write-Color "Current directory is:" -Color "Yellow"; $NewLine
             (pwd).Path
       
-            echo "Running runway plan in $(cloud_provider)\$(module)\$(environment)"
+            Write-Color "Running runway plan in $(cloud_provider)\$(module)\$(environment)" -Color "Yellow"; $NewLine
+
             runway plan
+
     workingDirectory: '$(Build.Repository.LocalPath)\runway\'
+    
     errorActionPreference: 'continue'

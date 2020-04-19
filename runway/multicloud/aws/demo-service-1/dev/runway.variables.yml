@@ -1,0 +1,16 @@
+account_alias:
+  dev: my_dev_account
+  prod: my_dev_account
+account_id:
+  vcore: 123456789012
+assume_role:
+  dev: arn:aws:iam::account-id1:role/role-name
+image_id:
+  dev: ami-abc123
+envvars:
+  profile:
+    dev: foo
+    prod: bar
+  app_path:
+    - myapp.tf
+    - foo
