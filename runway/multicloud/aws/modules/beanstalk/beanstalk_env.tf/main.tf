@@ -190,23 +190,23 @@ resource "aws_elastic_beanstalk_configuration_template" "beanstalk_config_templa
   }
 
 
-  setting {
-    namespace = "aws:elasticbeanstalk:application:environment"
-    name = "RDS_USERNAME"
-    value = jsondecode(data.aws_secretsmanager_secret_version.rds_secret.secret_string)["username"]
-  }
+  #setting {
+    #namespace = "aws:elasticbeanstalk:application:environment"
+    #name = "RDS_USERNAME"
+    #value = jsondecode(data.aws_secretsmanager_secret_version.rds_secret.secret_string)["username"]
+  #}
 
-  setting {
-    namespace = "aws:elasticbeanstalk:application:environment"
-    name = "RDS_PASSWORD"
-    value = jsondecode(data.aws_secretsmanager_secret_version.rds_secret.secret_string)["password"]
-  }
+  #setting {
+    #namespace = "aws:elasticbeanstalk:application:environment"
+    #name = "RDS_PASSWORD"
+    #value = jsondecode(data.aws_secretsmanager_secret_version.rds_secret.secret_string)["password"]
+  #}
 
-  setting {
-    namespace = "aws:elasticbeanstalk:application:environment"
-    name = "RDS_DATABASE"
-    value = "mydb"
-  }
+  #setting {
+    #namespace = "aws:elasticbeanstalk:application:environment"
+    #name = "RDS_DATABASE"
+    #value = "mydb"
+  #}
 
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"

@@ -107,6 +107,8 @@ steps:
 
             runway plan --tag "tf-modules" --tag "us-west-1"
 
+            New-Item -ItemType Directory -Name "Artifacts"
+            
             $TfPlanFiles = (Get-ChildItem -Recurse -Include "tfplan").FullName
 
             Write-Host "##[debug]Plan files are:"
@@ -117,11 +119,23 @@ steps:
 
               $ModuleDirectoryName = Split-Path -Path $TfPlanFile
 
-              $ModuleDirectoryName = Split-Path -Path $ModuleDirectoryName -Leaf
+              $ModuleDirectoryNameLeaf = Split-Path -Path $ModuleDirectoryName -Leaf
 
-              Write-Host "Module directory name is $ModuleDirectoryName"
+              Write-Host "Module directory name is $ModuleDirectoryNameLeaf"
 
-              Rename-Item -Path $TfPlanFile -NewName ($ModuleDirectoryName+"plan")
+              $NewPlanFile = (Rename-Item -Path $TfPlanFile -NewName ($ModuleDirectoryNameLeaf+"plan") -PassThru).FullName
+
+              $Compress = @{
+
+                LiteralPath= "$ModuleDirectoryName\.terraform", "$NewPlanFile"
+                CompressionLevel = "Fastest"
+                DestinationPath = ".\Artifacts\$ModuleDirectoryNameLeaf.zip"
+
+                }
+                
+                Compress-Archive @Compress
+
+
             }
 
             Write-Host "##[section]COMPLETE"
@@ -132,35 +146,5 @@ steps:
 
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: $(Build.Repository.LocalPath)\runway\multicloud\$(cloud_provider)\$(service)\$(environment)\vpc.tf\vpc.tfplan
-    artifactName: vpc.tfplan
-
-- task: PublishPipelineArtifact@1
-  inputs:
-    targetPath: $(Build.Repository.LocalPath)\runway\multicloud\$(cloud_provider)\$(service)\$(environment)\beanstalk_app.tf\beanstalk_app.tfplan
-    artifactName: beanstalk_app.tfplan
-
-- task: PublishPipelineArtifact@1
-  inputs:
-    targetPath: $(Build.Repository.LocalPath)\runway\multicloud\$(cloud_provider)\$(service)\$(environment)\beanstalk_env.tf\beanstalk_env.tfplan
-    artifactName: beanstalk_env.tfplan
-
-- task: PublishPipelineArtifact@1
-  inputs:
-    targetPath: $(Build.Repository.LocalPath)\runway\multicloud\$(cloud_provider)\$(service)\$(environment)\gateways.tf\gateways.tfplan
-    artifactName: gateways.tfplan
-
-- task: PublishPipelineArtifact@1
-  inputs:
-    targetPath: $(Build.Repository.LocalPath)\runway\multicloud\$(cloud_provider)\$(service)\$(environment)\rds.tf\rds.tfplan
-    artifactName: rds.tfplan
-
-- task: PublishPipelineArtifact@1
-  inputs:
-    targetPath: $(Build.Repository.LocalPath)\runway\multicloud\$(cloud_provider)\$(service)\$(environment)\routes.tf\routes.tfplan
-    artifactName: routes.tfplan
-
-- task: PublishPipelineArtifact@1
-  inputs:
-    targetPath: $(Build.Repository.LocalPath)\runway\multicloud\$(cloud_provider)\$(service)\$(environment)\security_groups.tf\security_groups.tfplan
-    artifactName: security_groups.tfplan
+    targetPath: $(Build.Repository.LocalPath)\runway\multicloud\$(cloud_provider)\$(service)\$(environment)\Artifacts
+    artifactName: TerraformPlans
