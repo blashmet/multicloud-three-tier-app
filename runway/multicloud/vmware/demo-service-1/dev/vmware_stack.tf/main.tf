@@ -23,16 +23,16 @@ variable "db_server_disk_space" { }
 
 #PROVIDERS
 provider "vsphere" {
-  user           = username
-  password       = password
-  vsphere_server = FQDN
+  user           = "blashmet"
+  password       = "vcorelabR0cks"
+  vsphere_server = "siovcsa01.vcorelab.com"
 
   # If you have a self-signed cert
   allow_unverified_ssl = true
 }
 
 provider "nsxt" {
-  host                     = "192.168.110.41"
+  host                     = "siovcsa01.vcorelab.com"
   username                 = "admin"
   password                 = "default"
   allow_unverified_ssl     = true
