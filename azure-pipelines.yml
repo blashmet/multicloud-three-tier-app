@@ -31,78 +31,136 @@ steps:
     inlineScript: |
             
             $NewLine = "`n"
-            Install-Module -Name PSWriteColor -Force
 
-            Write-Color "Starting pipeline...$NewLine" -Color "Cyan"
+            Write-Host "##[section] This is colored green!"
+            Write-Host "##[command] This is colored blue!"
+            Write-Host "##[debug] This is colored purple!"
+            Write-Host "##[warning] This is colored orange!"
+            Write-Host "##vso[task.logissue type=warning;]This is colored orange!" 
+            Write-Host "##[error] This is colored red!"
+            Write-Host "##vso[task.logissue type=error;]This is colored red!"
+
+            Write-Host "##[section]Starting pipeline"; $NewLine
             
-            Write-Color "Current directory is: ", "$((pwd).Path)" -Color "White", "Yellow"; $NewLine
-            
-            (pwd).Path; $NewLine
+            Write-Host "##[debug]Current directory is: $((pwd).Path)" ; $NewLine
+            (pwd).Path ; $NewLine
       
-            Write-Color "Variable group test:" -Color "Cyan"; $NewLine
+            Write-Host "##[section]Variable group test:" ; $NewLine
 
-            Write-Color "Cloud provider is:", " $(cloud_provider)" -Color "White", "Magenta"; $NewLine
+            Write-Host "##[warning]Cloud provider is: $(cloud_provider)"
 
-            Write-Color "Service is:", "$(service)" -Color "White", "Magenta"; $NewLine
+            Write-Host "##[warning]Service is: $(service)"
 
-            Write-Color "Environment is:", "$(environment)"  -Color "White", "Magenta"; $NewLine
+            Write-Host "##[warning]Environment is: $(environment)" 
 
-            Write-Color "Region is:", "$(region)" -Color "White", "Magenta"; $NewLine
+            Write-Host "##[warning]Region is: $(region)"
 
-            Write-Color "Module is:","$(module)" -Color "White", "Magenta"; $NewLine
+            Write-Host "##[warning]Module is: $(module)"
       
-            Write-Color "Installing runway..." -Color "Cyan"; $NewLine
+            Write-Host "##[section]Installing runway..."; $NewLine
 
             pip install runway==1.6.0
 
-            Write-Color "Runway installed." -Color "Green"; $NewLine
+            Write-Host "##[command]Runway installed."; $NewLine
 
-            Write-Color "Current directory is: ", "$((pwd).Path)" -Color "White", "Yellow"; $NewLine
+            Write-Host "##[section]Working directory check and dependency versions:" ; $NewLine
+
+            Write-Host "##[debug]Current directory is: $((pwd).Path)" ; $NewLine
       
-            Write-Color "Python version is: ", "$(python --version)" -Color "White", "Yellow"; $NewLine
+            Write-Host "##[debug]Python version is: $(python --version)" ; $NewLine
       
-            Write-Color "pip version is: ", "$(pip --version)" -Color "White", "Yellow"; $NewLine
+            Write-Host "##[debug]pip version is: ", "$(pip --version)" ; $NewLine
       
-            Write-Color "Runway version is: ", "$(runway --version)" -Color "White", "Yellow"; $NewLine
+            Write-Host "##[debug]Runway version is: ", "$(runway --version)" ; $NewLine
 
-            Write-Color "Terraform version is: ", "$(terraform --version)" -Color "White", "Yellow"; $NewLine
+            Write-Host "##[debug]Terraform version is: ", "$(terraform --version)" ; $NewLine
+
+            Write-Host "##[debug]CI variable is: ($null = interactive, enabled = no prompts)" ; $NewLine
+
+            Write-Host "$env:CI"; $NewLine
       
-            Write-Color "Setting CI variable..." -Color "Yellow"; $NewLine
-
-            $env:CI="1"; $NewLine
-
-            Write-Color "CI variable is:", "($null = interactive, 1 = CI)" -Color "White", "Magenta"
-
-            Write-Color "$env:CI" -Color "Green"; $NewLine
-      
-            Write-Color "Current directory is: ", "$((pwd).Path)" -Color "White", "Yellow"; $NewLine
-
-            Write-Color "Importing InitializeTerraformWorkspace module..."  -Color "Yellow"; $NewLine
-
-            Import-Module .\scripts\InitializeTerraformWorkspace
-
-            Write-Color "InitializeTerraformWorkspace module imported successfully"  -Color "Green"; $NewLine
-      
-            Write-Color 'Changing directory to $(cloud_provider)\$(service)\$(environment)' -Color "Yellow"; $NewLine
+            Write-Host '##[section]Changing directory to $(cloud_provider)\$(service)\$(environment)' ; $NewLine
 
             cd $(Build.Repository.LocalPath)\runway\multicloud\$(cloud_provider)\$(service)\$(environment)
 
-            Write-Color "Current directory is: ", "$((pwd).Path)" -Color "White", "Yellow"; $NewLine
+            Write-Host "##[debug]Current directory is: $((pwd).Path)" ; $NewLine
 
-            Write-Color "Initializing Terraform workspaces for the selected modules"
+            #Write-Host "##[section]Initializing Terraform workspaces for the selected modules"
+
+            #Write-Host "Importing InitializeTerraformWorkspace module..."  ; $NewLine
+
+            #Import-Module .\scripts\InitializeTerraformWorkspace
+
+            #Write-Host "InitializeTerraformWorkspace module imported successfully" ; $NewLine
            
-            Initialize-TerraformWorkspace -Environment $(environment) -AllModules $true
+            #Initialize-TerraformWorkspace -Environment $(environment) -AllModules $true
       
-            Write-Color "Current directory is: ", "$((pwd).Path)" -Color "White", "Yellow"; $NewLine
+            Write-Host "##[debug]Current directory is: $((pwd).Path)" ; $NewLine
       
-            Write-Color "Running runway plan in $(cloud_provider)\$(module)\$(environment)" -Color "Yellow"; $NewLine
-
-            Write-Host "Write-Host test" -ForegroundColor "Green"
+            Write-Host "##[section]Running runway deploy in $(cloud_provider)\$(module)\$(environment)" ; $NewLine
 
             runway deploy --tag "bootstrap-modules" --tag "us-west-1"
 
+            Write-Host "##[section]Running runway plan in $(cloud_provider)\$(module)\$(environment) to generate tfplans for all modules" ; $NewLine
+
+            Write-Host "##[debug]Current directory is: $((pwd).Path)" ; $NewLine
+
             runway plan --tag "tf-modules" --tag "us-west-1"
+
+            $TfPlanFiles = (Get-ChildItem -Recurse -Include "tfplan").FullName
+
+            Write-Host "##[debug]Plan files are:"
+
+            Write-Host "##[debug]$TfPlanFiles"
+
+            ForEach ($TfPlanFile in $TfPlanFiles) {              
+
+              $ModuleDirectoryName = Split-Path -Path $TfPlanFile
+
+              $ModuleDirectoryName = Split-Path -Path $ModuleDirectoryName -Leaf
+
+              Write-Host "Module directory name is $ModuleDirectoryName"
+
+              Rename-Item -Path $TfPlanFile -NewName ($ModuleDirectoryName+"plan")
+            }
+
+            Write-Host "##[section]COMPLETE"
 
     workingDirectory: '$(Build.Repository.LocalPath)\runway\'
 
     errorActionPreference: 'continue'
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: $(Build.Repository.LocalPath)\runway\multicloud\$(cloud_provider)\$(service)\$(environment)\vpc.tf\vpc.tfplan
+    artifactName: vpc.tfplan
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: $(Build.Repository.LocalPath)\runway\multicloud\$(cloud_provider)\$(service)\$(environment)\beanstalk_app.tf\beanstalk_app.tfplan
+    artifactName: beanstalk_app.tfplan
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: $(Build.Repository.LocalPath)\runway\multicloud\$(cloud_provider)\$(service)\$(environment)\beanstalk_env.tf\beanstalk_env.tfplan
+    artifactName: beanstalk_env.tfplan
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: $(Build.Repository.LocalPath)\runway\multicloud\$(cloud_provider)\$(service)\$(environment)\gateways.tf\gateways.tfplan
+    artifactName: gateways.tfplan
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: $(Build.Repository.LocalPath)\runway\multicloud\$(cloud_provider)\$(service)\$(environment)\rds.tf\rds.tfplan
+    artifactName: rds.tfplan
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: $(Build.Repository.LocalPath)\runway\multicloud\$(cloud_provider)\$(service)\$(environment)\routes.tf\routes.tfplan
+    artifactName: routes.tfplan
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: $(Build.Repository.LocalPath)\runway\multicloud\$(cloud_provider)\$(service)\$(environment)\security_groups.tf\security_groups.tfplan
+    artifactName: security_groups.tfplan

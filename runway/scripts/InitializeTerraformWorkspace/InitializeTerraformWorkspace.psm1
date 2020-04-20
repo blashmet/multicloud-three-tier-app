@@ -39,7 +39,7 @@ function Initialize-TerraformWorkspace{
     #Import YAML parser
     Install-Module -Name powershell-yaml -Force -Repository PSGallery -Scope CurrentUser
 
-    #Import runway.yml file to detect available Terraform\CF modules
+    #Import runway.yml file to detect available TF modules
 
     [string[]]$RunwayYamlContent = Get-Content "runway.yml"
     $YamlConstructor = ''
