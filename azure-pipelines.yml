@@ -107,13 +107,15 @@ steps:
 
             runway plan --tag "tf-modules" --tag "us-west-1"
 
+            if(Test-Path "Artifacts") {Remove-Item "Artifacts" -Recurse -Force}
+
             New-Item -ItemType Directory -Name "Artifacts"
             
             $TfPlanFiles = (Get-ChildItem -Recurse -Include "tfplan").FullName
 
             Write-Host "##[debug]Plan files are:"
 
-            Write-Host "##[debug]$TfPlanFiles"
+            ForEach ($TfPlanFile in $TfPlanFiles) {Write-Host "##[debug]$($TfPlanFile.FullName)"}
 
             ForEach ($TfPlanFile in $TfPlanFiles) {              
 

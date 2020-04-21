@@ -5,7 +5,7 @@ sys_path: ../../../modules/cleanup/cfngin_bucket_cleanup.cfn/
 
 stacks:
 
-  vpc-tf-state:
+  vmware-stack-tf-state:
     template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
     variables:
       BucketName: ${tf_state_vpc_bucket_name}
@@ -13,61 +13,6 @@ stacks:
       S3CleanupLambdaArn: ${rxref s3-cleanup-lambda::S3CleanupLambdaArn}
     enabled: true
       
-  gateways-tf-state:
-    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
-    variables:
-      BucketName: ${tf_state_gateways_bucket_name}
-      TableName: ${tf_state_gateways_table_name}
-      S3CleanupLambdaArn: ${rxref s3-cleanup-lambda::S3CleanupLambdaArn}
-    enabled: true
-      
-  routes-tf-state:
-    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
-    variables:
-      BucketName: ${tf_state_routes_bucket_name}
-      TableName: ${tf_state_routes_table_name}
-      S3CleanupLambdaArn: ${rxref s3-cleanup-lambda::S3CleanupLambdaArn}
-    enabled: true
-
-  security-groups-tf-state:
-    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
-    variables:
-      BucketName: ${tf_state_security_groups_bucket_name}
-      TableName: ${tf_state_security_groups_table_name}
-      S3CleanupLambdaArn: ${rxref s3-cleanup-lambda::S3CleanupLambdaArn}
-    enabled: true
-
-  rds-tf-state:
-    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
-    variables:
-      BucketName: ${tf_state_rds_bucket_name}
-      TableName: ${tf_state_rds_table_name}
-      S3CleanupLambdaArn: ${rxref s3-cleanup-lambda::S3CleanupLambdaArn}
-    enabled: true
-      
-  beanstalk-app-tf-state:
-    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
-    variables:
-      BucketName: ${tf_state_beanstalk_app_bucket_name}
-      TableName: ${tf_state_beanstalk_app_table_name}
-      S3CleanupLambdaArn: ${rxref s3-cleanup-lambda::S3CleanupLambdaArn}
-    enabled: true
-      
-  beanstalk-env-tf-state:
-    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
-    variables:
-      BucketName: ${tf_state_beanstalk_env_bucket_name}
-      TableName: ${tf_state_beanstalk_env_table_name}
-      S3CleanupLambdaArn: ${rxref s3-cleanup-lambda::S3CleanupLambdaArn}
-    enabled: true
-      
-  beanstalk-source-tf-state:
-    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
-    variables:
-      BucketName: ${tf_state_beanstalk_source_bucket_name}
-      TableName: ${tf_state_beanstalk_source_table_name}
-      S3CleanupLambdaArn: ${rxref s3-cleanup-lambda::S3CleanupLambdaArn}
-    enabled: true
 
 post_destroy:
 
