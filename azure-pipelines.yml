@@ -123,16 +123,26 @@ steps:
 
               $NewPlanFile = (Rename-Item -Path $TfPlanFile -NewName ($ModuleDirectoryNameLeaf+"plan") -PassThru).FullName
 
+              if(!(Test-Path ".terraform-version")) {
+                  
+                
+                $TerraformVersionFile = (New-Item -ItemType "File" -Name ".terraform-version").FullName
+
+                $Content = "0.12.24"
+
+                Set-Content -Path $TerraformVersionFile -Value $Content -NoNewline
+            
+                }           
+
               $Compress = @{
 
-                LiteralPath= "$ModuleDirectoryName\.terraform", "$NewPlanFile"
+                LiteralPath= "$ModuleDirectoryName\.terraform", "$NewPlanFile", ".terraform-version"
                 CompressionLevel = "Fastest"
                 DestinationPath = ".\Artifacts\$ModuleDirectoryNameLeaf.zip"
 
                 }
                 
                 Compress-Archive @Compress
-
 
             }
 
