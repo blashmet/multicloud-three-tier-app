@@ -32,13 +32,13 @@ steps:
             
             $NewLine = "`n"
 
-            Write-Host "##[section] This is colored green!"
-            Write-Host "##[command] This is colored blue!"
-            Write-Host "##[debug] This is colored purple!"
-            Write-Host "##[warning] This is colored orange!"
-            Write-Host "##vso[task.logissue type=warning;]This is colored orange!" 
-            Write-Host "##[error] This is colored red!"
-            Write-Host "##vso[task.logissue type=error;]This is colored red!"
+            Write-Host "##[section] Section = Green"
+            Write-Host "##[command] Command = Blue"
+            Write-Host "##[debug] Debug = Purple"
+            Write-Host "##[warning] Warning = Orange"
+            Write-Host "##vso[task.logissue type=warning;] LogWarning = Orange" 
+            Write-Host "##[error] Error = Red"
+            Write-Host "##vso[task.logissue type=error;] LogError = Red"
 
             Write-Host "##[section]Starting pipeline"; $NewLine
             
@@ -111,11 +111,11 @@ steps:
 
             New-Item -ItemType Directory -Name "Artifacts"
             
-            $TfPlanFiles = (Get-ChildItem -Recurse -Include "tfplan").FullName
+            $TfPlanFiles = (Get-ChildItem -Recurse -Include "*tfplan").FullName
 
             Write-Host "##[debug]Plan files are:"
 
-            ForEach ($TfPlanFile in $TfPlanFiles) {Write-Host "##[debug]$($TfPlanFile.FullName)"}
+            ForEach ($TfPlanFile in $TfPlanFiles) {Write-Host "##[debug] $($TfPlanFile)"}
 
             ForEach ($TfPlanFile in $TfPlanFiles) {              
 
