@@ -47,15 +47,15 @@ steps:
       
             Write-Host "##[section]Variable group test:" ; $NewLine
 
-            Write-Host "##[warning]Cloud provider is: $(cloud_provider)"
+            Write-Host "##[debug]Cloud provider is: $(cloud_provider)"
 
-            Write-Host "##[warning]Service is: $(service)"
+            Write-Host "##[debug]Service is: $(service)"
 
-            Write-Host "##[warning]Environment is: $(environment)" 
+            Write-Host "##[debug]Environment is: $(environment)" 
 
-            Write-Host "##[warning]Region is: $(region)"
+            Write-Host "##[debug]Region is: $(region)"
 
-            Write-Host "##[warning]Module is: $(module)"
+            Write-Host "##[debug]Module is: $(module)"
       
             Write-Host "##[section]Installing runway..."; $NewLine
 
@@ -74,10 +74,6 @@ steps:
             Write-Host "##[debug]Runway version is: ", "$(runway --version)" ; $NewLine
 
             Write-Host "##[debug]Terraform version is: ", "$(terraform --version)" ; $NewLine
-
-            Write-Host "##[debug]CI variable is: ($null = interactive, enabled = no prompts)" ; $NewLine
-
-            Write-Host "$env:CI"; $NewLine
       
             Write-Host '##[section]Changing directory to $(cloud_provider)\$(service)\$(environment)' ; $NewLine
 
@@ -94,10 +90,10 @@ steps:
             #Write-Host "InitializeTerraformWorkspace module imported successfully" ; $NewLine
            
             #Initialize-TerraformWorkspace -Environment $(environment) -AllModules $true
+
+            $NewLine
       
-            Write-Host "##[debug]Current directory is: $((pwd).Path)" ; $NewLine
-      
-            Write-Host "##[section]Running runway deploy in $(cloud_provider)\$(module)\$(environment)" ; $NewLine
+            Write-Host "##[section] Running runway deploy in $(cloud_provider)\$(module)\$(environment)" ; $NewLine
 
             runway deploy --tag "bootstrap-modules" --tag "us-west-1"
 
