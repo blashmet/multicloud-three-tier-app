@@ -10,6 +10,12 @@ stacks:
       KeyPairName: ${keypair_name}
       PrivateKeyName: ${private_key_name}
 
+  jenkins-key:
+    template_path: ../../../modules/security/ec2_keys.cfn/templates/ec2_keys.yml  
+    variables:     
+      KeyPairName: ${jenkins_keypair_name}
+      PrivateKeyName: ${jenkins_private_key_name}
+
 
 post_destroy:
 

@@ -13,15 +13,11 @@ variable "app_server_cpu_count" { }
 variable "app_server_memory" { }
 variable "app_server_disk_space" { }
 
-
 #DB SERVER VM
 variable "db_server_name" { }
 variable "db_server_cpu_count" { }
 variable "db_server_memory" { }
 variable "db_server_disk_space" { }
-
-
-
 
 #PROVIDERS
 provider "vsphere" {
@@ -36,13 +32,25 @@ provider "vsphere" {
 provider "nsxt" {
   host                     = "192.168.225.107"
   username                 = "admin"
-  password                 = "Wak3^N0w1234"
+  password                 = "Wak3^N0w1234!"
   allow_unverified_ssl     = true
   max_retries              = 10
   retry_min_delay          = 500
   retry_max_delay          = 5000
   retry_on_status_codes    = [429]
 }
+
+
+provider "infoblox" {
+    username = "admin"
+    password = "Wak3^N0w"
+    #server = "10.1.1.18"
+    host  = "https://gridpri.vcorelab.com/"
+    sslverify = "false"
+    usecookies = "false"
+}
+
+
 
 #BACKEND
 terraform {

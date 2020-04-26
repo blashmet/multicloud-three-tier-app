@@ -97,6 +97,18 @@ deployments:
               bucket: aws-us-west-1-dev-security-groups-tf-state::TerraformStateBucketName
               dynamodb_table: aws-us-west-1-dev-security-groups-tf-state::TerraformStateTableName
 
+        - name: jenkins_ec2
+          path: jenkins_ec2.tf
+          tags:
+            - tf-modules
+            - us-west-1
+          options:
+            terraform_backend_config:
+              region: us-west-1
+            terraform_backend_cfn_outputs:
+              bucket: aws-us-west-1-dev-jenkins-ec2-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-us-west-1-dev-jenkins-ec2-tf-state::TerraformStateTableName
+
         - name: rds
           path: rds.tf
           tags:
@@ -108,7 +120,8 @@ deployments:
             terraform_backend_cfn_outputs:
               bucket: aws-us-west-1-dev-rds-tf-state::TerraformStateBucketName
               dynamodb_table: aws-us-west-1-dev-rds-tf-state::TerraformStateTableName
-
+            enabled: false
+          
         - name: beanstalk_app
           path: beanstalk_app.tf
           tags:
@@ -120,6 +133,7 @@ deployments:
             terraform_backend_cfn_outputs:
               bucket: aws-us-west-1-dev-beanstalk-app-tf-state::TerraformStateBucketName
               dynamodb_table: aws-us-west-1-dev-beanstalk-app-tf-state::TerraformStateTableName
+          enabled: false
 
         - name: beanstalk_env
           path: beanstalk_env.tf
@@ -132,6 +146,7 @@ deployments:
             terraform_backend_cfn_outputs:
               bucket: aws-us-west-1-dev-beanstalk-env-tf-state::TerraformStateBucketName
               dynamodb_table: aws-us-west-1-dev-beanstalk-env-tf-state::TerraformStateTableName
+          enabled: false
     
     env_vars:
         TF_CLI_ARGS_plan: "-out tfplan"

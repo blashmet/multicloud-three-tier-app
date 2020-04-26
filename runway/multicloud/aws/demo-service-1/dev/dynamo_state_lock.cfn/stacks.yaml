@@ -37,6 +37,14 @@ stacks:
       S3CleanupLambdaArn: ${rxref s3-cleanup-lambda::S3CleanupLambdaArn}
     enabled: true
 
+  jenkins-ec2-tf-state:
+    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
+    variables:
+      BucketName: ${tf_state_jenkins_ec2_bucket_name}
+      TableName: ${tf_state_jenkins_ec2_table_name}
+      S3CleanupLambdaArn: ${rxref s3-cleanup-lambda::S3CleanupLambdaArn}
+    enabled: true
+
   rds-tf-state:
     template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
     variables:

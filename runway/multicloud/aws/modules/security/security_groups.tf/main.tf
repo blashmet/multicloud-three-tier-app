@@ -111,3 +111,28 @@ resource "aws_security_group" "rds" {
     Name = "rds-sg-${var.region}-${var.environment}"
   }
 }
+
+resource "aws_security_group" "jenkins" {
+  name        = "jenkins-sg-${var.region}-${var.environment}"
+  description = "Allow 8080 from specified IP"
+  vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
+
+  ingress {
+    description = "HTTP from specified ip"
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["72.44.200.20/32"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "jenkins-sg-${var.region}-${var.environment}"
+  }
+}

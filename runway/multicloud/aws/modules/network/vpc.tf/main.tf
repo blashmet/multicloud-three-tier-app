@@ -16,6 +16,7 @@ resource "aws_subnet" "pub_sub_1" {
   vpc_id     = aws_vpc.vpc.id
   cidr_block = var.pub_sub_1_cidr
   availability_zone = var.az_1
+  map_public_ip_on_launch = true
   
 
   tags = {
@@ -27,6 +28,7 @@ resource "aws_subnet" "pub_sub_2" {
   vpc_id     = aws_vpc.vpc.id
   cidr_block = var.pub_sub_2_cidr
   availability_zone = var.az_2
+  map_public_ip_on_launch = true
 
   tags = {
     Name = "pub-sub-2-${var.region}-${var.environment}"

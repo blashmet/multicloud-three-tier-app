@@ -31,6 +31,7 @@ data "terraform_remote_state" "security_groups" {
     elb_sg_id = ""
     ec2_sg_id = ""
     rds_sg_id = ""
+    jenkins_sg_id = ""
     
   }
 }
