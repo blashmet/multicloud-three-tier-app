@@ -18,8 +18,6 @@ resource "infoblox_ip" "web_ls_cidr" {
 
 }
 
-
-
 #VSPHERE DATA SOURCES
 
 data "vsphere_datacenter" "dc" {
@@ -161,9 +159,10 @@ resource "vsphere_virtual_machine" "db_server_vm" {
             }
 
             ipv4_gateway = "10.2.21.1"
+            
 
             windows_options {
-              computer_name  = "app-server"
+              computer_name  = "db-server"
               workgroup      = "terraform"
               admin_password = "VMw4re"
               auto_logon = true
@@ -190,6 +189,12 @@ data "nsxt_edge_cluster" "EC" {
 
 }
 
+data "nsxt_transport_zone" "transport_zone" {
+
+  display_name = "overlay-transport-zone"
+
+}
+
 data "nsxt_logical_tier0_router" "default" {
 
   display_name = "T0-LR-1"
@@ -200,22 +205,54 @@ data "nsxt_logical_tier0_router" "default" {
 
 resource "nsxt_logical_router_link_port_on_tier0" "default" {
 
-  display_name      = "port_on_tier0"
+  display_name      = "port_on_tier0_terraform"
   logical_router_id = data.nsxt_logical_tier0_router.default.id
 
 }
 
 resource "nsxt_logical_tier1_router" "default" {
 
-  display_name    = "default"
+  display_name    = "T1_LR_01_terraform"
   edge_cluster_id = data.nsxt_edge_cluster.EC.id
+  enable_router_advertisement = true
+  advertise_connected_routes  = true
 
 }
 
 resource "nsxt_logical_router_link_port_on_tier1" "default" {
 
+  display_name                  = "port_on_tier1_terraform"
   logical_router_id             = nsxt_logical_tier1_router.default.id
   linked_logical_router_port_id = nsxt_logical_router_link_port_on_tier0.default.id
+
+}
+
+resource "nsxt_logical_switch" "logical_switch" {
+
+  display_name       = "logical_switch_terraform"
+  transport_zone_id  = data.nsxt_transport_zone.transport_zone.id
+  admin_state        = "UP"
+  description        = "Logical Switch for the T1 Router."
+  replication_mode   = "MTEP"
+
+}
+
+resource "nsxt_logical_port" "logical_port" {
+
+  display_name = "logical_port_terraform"
+  admin_state       = "UP"
+  description       = "Logical Port on the Logical Switch for the T1 Infrastructure Router."
+  logical_switch_id = nsxt_logical_switch.logical_switch.id
+
+}
+
+resource "nsxt_logical_router_downlink_port" "downlink_port" {
+
+  display_name = "downlink_port_terraform"
+  description                   = "Downlink port connecting the t1 router to its Logical Switch"
+  logical_router_id             = nsxt_logical_tier1_router.default.id
+  linked_logical_switch_port_id = nsxt_logical_port.logical_port.id
+  ip_address                    = "10.2.21.1/31"
 
 }
 
@@ -231,8 +268,6 @@ resource "nsxt_lb_pool" "lb_pool" {
   min_active_members           = 1
   tcp_multiplexing_enabled     = false
   tcp_multiplexing_number      = 3
-  active_monitor_id            = nsxt_lb_icmp_monitor.lb_icmp_monitor.id
-  passive_monitor_id           = nsxt_lb_passive_monitor.lb_passive_monitor.id
 
   member {
 
@@ -240,7 +275,7 @@ resource "nsxt_lb_pool" "lb_pool" {
     backup_member              = "false"
     display_name               = "app-server"
     ip_address                 = vsphere_virtual_machine.app_server_vm.default_ip_address
-    max_concurrent_connections = "1"
+    max_concurrent_connections = "5"
     port                       = "80"
     weight                     = "1"
 
@@ -251,40 +286,26 @@ resource "nsxt_lb_pool" "lb_pool" {
 
 ###VIRTUAL SERVER
 
-resource "nsxt_lb_http_application_profile" "http_xff" {
-  x_forwarded_for = "INSERT"
-}
+resource "nsxt_lb_http_application_profile" "http_app_profile" {
 
-resource "nsxt_lb_cookie_persistence_profile" "session_persistence" {
-  cookie_name = "SESSION"
-}
-
-resource "nsxt_lb_http_request_rewrite_rule" "redirect_post" {
-  match_strategy = "ALL"
-  method_condition {
-    method = "POST"
-  }
-
-  uri_rewrite_action {
-    uri = "/sorry_page.html"
-  }
+  description            = "lb_http_application_profile provisioned by Terraform"
+  display_name           = "lb_http_application_profile"
+  
 }
 
 
 resource "nsxt_lb_http_virtual_server" "lb_virtual_server" {
   description                = "lb_virtual_server provisioned by terraform"
-  display_name               = "virtual server 1"
+  display_name               = "virtual_server_1"
   access_log_enabled         = true
-  application_profile_id     = nsxt_lb_http_application_profile.http_xff.id
+  application_profile_id     = nsxt_lb_http_application_profile.http_app_profile.id
   enabled                    = true
   ip_address                 = infoblox_ip.web_ls_cidr.ipaddress
   port                       = "80"
   default_pool_member_port   = "80"
   max_concurrent_connections = 50
   max_new_connection_rate    = 20
-  persistence_profile_id     = nsxt_lb_cookie_persistence_profile.session_persistence.id
   pool_id                    = nsxt_lb_pool.lb_pool.id
-  rule_ids                   = [nsxt_lb_http_request_rewrite_rule.redirect_post.id]
 
 }
 
@@ -301,16 +322,4 @@ resource "nsxt_lb_service" "lb_service" {
   size               = "SMALL"
   depends_on         = [nsxt_logical_router_link_port_on_tier1.default]
 
-}
-
-resource "nsxt_lb_icmp_monitor" "lb_icmp_monitor" {
-  display_name = "lb_icmp_monitor"
-  fall_count   = 3
-  interval     = 5
-}
-
-resource "nsxt_lb_passive_monitor" "lb_passive_monitor" {
-  display_name = "lb_passive_monitor"
-  max_fails    = 3
-  timeout      = 10
 }
