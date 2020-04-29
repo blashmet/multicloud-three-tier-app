@@ -1,0 +1,110 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: Terraform State Resources
+
+Parameters:
+  
+  BucketName:
+    Default: ''
+    Description: (optional) Name for the S3 bucket
+    Type: String
+  
+  TableName:
+    Default: ''
+    Description: (optional) Name for the DynamoDB table
+    Type: String
+
+  S3CleanupLambdaArn:
+    Description: Lambda to cleanup buckets before deletion.
+    Type: String
+  
+
+Resources:
+
+  ManagementPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: Managed policy for Terraform state management.
+      Path: /
+      PolicyDocument:
+        Statement:
+          - Action:
+              - s3:ListBucket
+            Effect: Allow
+            Resource:
+              - !GetAtt 'TerraformStateBucket.Arn'
+          - Action:
+              - s3:GetObject
+              - s3:PutObject
+            Effect: Allow
+            Resource:
+              - !Join
+                - ''
+                - - !GetAtt 'TerraformStateBucket.Arn'
+                  - /*
+          - Action:
+              - dynamodb:GetItem
+              - dynamodb:PutItem
+              - dynamodb:DeleteItem
+            Effect: Allow
+            Resource:
+              - !GetAtt 'TerraformStateTable.Arn'
+        Version: '2012-10-17'
+    
+  
+  TerraformStateBucket:
+    Type: AWS::S3::Bucket
+    
+    Properties:
+        AccessControl: Private
+        BucketName: !Ref BucketName
+        LifecycleConfiguration:
+          Rules:
+            - NoncurrentVersionExpirationInDays: 90
+              Status: Enabled
+        VersioningConfiguration:
+          Status: Enabled
+    DeletionPolicy: Delete
+    
+  
+  TerraformStateTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref 'TableName'
+      AttributeDefinitions:
+        - AttributeName: LockID
+          AttributeType: S
+      KeySchema:
+        - AttributeName: LockID
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+          
+
+  CleanupBucketOnDelete:
+    Type: Custom::CustomCleanupBucketResource
+    Properties:
+      ServiceToken: !Ref S3CleanupLambdaArn
+      BucketName: !Ref TerraformStateBucket
+    DependsOn: TerraformStateBucket
+
+
+
+Outputs:
+
+  PolicyArn:
+    Description: Managed policy Arn
+    Value: !Ref 'ManagementPolicy'
+  
+  TerraformStateBucketArn:
+    Description: Arn of bucket storing Terraform state
+    Value: !GetAtt 'TerraformStateBucket.Arn'
+  
+  TerraformStateBucketName:
+    Description: Name of bucket storing Terraform state
+    Value: !Ref 'TerraformStateBucket'
+  
+  TerraformStateTableName:
+    Description: Name of DynamoDB table for Terraform state
+    Value: !Ref 'TerraformStateTable'

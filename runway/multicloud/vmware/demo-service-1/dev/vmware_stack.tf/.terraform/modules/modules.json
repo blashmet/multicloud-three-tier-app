@@ -1,1 +1,1 @@
-{"Modules":[{"Key":"vmware_stack","Source":"../../../modules/vmware/vmware_stack.tf","Dir":"../../../modules/vmware/vmware_stack.tf"},{"Key":"","Source":"","Dir":"."}]}
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"vmware_stack","Source":"../../../modules/vmware/vmware_stack.tf","Dir":"../../../modules/vmware/vmware_stack.tf"}]}

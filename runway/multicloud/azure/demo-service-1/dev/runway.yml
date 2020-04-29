@@ -1,0 +1,49 @@
+---
+ignore_git_branch: true
+
+deployments:
+
+  - name: azure-us-west-1-dev
+
+    modules:
+        
+        - name: s3_cleanup_lambda
+          path: s3_cleanup_lambda.cfn
+
+        - name: dynamo_state_lock
+          path: dynamo_state_lock.cfn
+
+        - name: azure_stack
+          path: azure_stack.tf
+          options:
+              terraform_backend_config:
+                region: us-west-1
+              terraform_backend_cfn_outputs:
+                bucket: azure-us-west-1-dev-azure-stack-tf-state::TerraformStateBucketName
+                dynamodb_table: azure-us-west-1-dev-azure-stack-tf-state::TerraformStateTableName
+    
+    regions:
+      - us-west-1
+
+      
+  - name: azure-us-east-2-dev
+
+    modules:
+
+        - name: s3_cleanup_lambda
+          path: s3_cleanup_lambda.cfn
+
+        - name: dynamo_state_lock
+          path: dynamo_state_lock.cfn
+
+        - name: azure_stack
+          path: azure_stack.tf
+          options:
+            terraform_backend_config:
+              region: us-east-2
+            terraform_backend_cfn_outputs:
+              bucket: azure-us-east-2-dev-azure-stack-tf-state::TerraformStateBucketName
+              dynamodb_table: azure-us-east-2-dev-azure-stack-tf-state::TerraformStateTableName
+
+    regions:
+      - us-east-2
