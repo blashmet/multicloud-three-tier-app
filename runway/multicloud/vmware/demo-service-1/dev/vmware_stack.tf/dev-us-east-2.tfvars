@@ -9,15 +9,16 @@ app_server_name = "terraform_app_server"
 app_server_cpu_count = "2"
 app_server_memory = "2048"
 app_server_disk_space = "40"
-app_network_name = "App-LS"
+app_network_name = "ls_app_terraform"
+
 
 #DB SERVER VM
 db_server_name = "terraform_db_server"
 db_server_cpu_count = "2"
 db_server_memory = "2048"
 db_server_disk_space = "40"
-db_network_name = "DB-LS"
+db_network_name = "ls_db_terraform"
 
 
 #NSX-T
-lb_network_name = "Web-LS"
+lb_network_name = "ls_web_terraform"

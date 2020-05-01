@@ -1,57 +1,83 @@
 #INFOBLOX NETWORKS
 
-resource "infoblox_ip" "app_ls_cidr" {
+resource "infoblox_ip" "ls_app_cidr" {
 
-  cidr = "10.2.20.0/24"
-
-}
-
-resource "infoblox_ip" "db_ls_cidr" {
-
-  cidr = "10.2.21.0/24"
+  cidr = "10.23.1.0/24"
 
 }
 
-resource "infoblox_ip" "web_ls_cidr" {
+resource "infoblox_ip" "ls_db_cidr" {
 
-  cidr = "10.2.22.0/24"
+  cidr = "10.23.2.0/24"
+
+}
+
+resource "infoblox_ip" "ls_web_cidr" {
+
+  cidr = "10.23.3.0/24"
 
 }
 
 #VSPHERE DATA SOURCES
 
 data "vsphere_datacenter" "dc" {
+
   name = var.vsphere_datacenter_name
+
 }
 
 data "vsphere_datastore" "datastore" {
+
   name          = var.vsphere_datastore_name
+
   datacenter_id = data.vsphere_datacenter.dc.id
+
 }
 
 data "vsphere_resource_pool" "pool" {
+
   name          = var.vsphere_resource_pool_name
+
   datacenter_id = data.vsphere_datacenter.dc.id
+
 }
 
 data "vsphere_network" "app_network" {
+
   name          = var.app_network_name
+
   datacenter_id = data.vsphere_datacenter.dc.id
+
+  depends_on = [
+
+    nsxt_logical_switch.ls_app_terraform,
+
+  ]
+
 }
 
 data "vsphere_network" "db_network" {
+
   name          = var.db_network_name
+
   datacenter_id = data.vsphere_datacenter.dc.id
+
+  depends_on = [
+
+    nsxt_logical_switch.ls_db_terraform,
+
+  ]
+
 }
 
-data "vsphere_network" "lb_network" {
-  name          = var.lb_network_name
-  datacenter_id = data.vsphere_datacenter.dc.id
-}
+
 
 data "vsphere_virtual_machine" "template" {
+
   name          = "2012r2-vra76-gugent"
+
   datacenter_id = data.vsphere_datacenter.dc.id
+
 }
 
 #VSPHERE RESOURCES
@@ -67,11 +93,12 @@ resource "vsphere_virtual_machine" "app_server_vm" {
   num_cpus                    = var.app_server_cpu_count
   memory                      = var.app_server_memory
   firmware                    = "bios"
-  wait_for_guest_net_timeout  = "1"
+  wait_for_guest_net_timeout  = "-1"
 
   network_interface {
 
     network_id = data.vsphere_network.app_network.id
+
     adapter_type = data.vsphere_virtual_machine.template.network_interface_types[0]
 
   }
@@ -94,13 +121,17 @@ resource "vsphere_virtual_machine" "app_server_vm" {
       
 
             network_interface {
-              ipv4_address = infoblox_ip.app_ls_cidr.ipaddress
+
+              ipv4_address = infoblox_ip.ls_app_cidr.ipaddress
+
               ipv4_netmask = 24
+
             }
 
-            ipv4_gateway = "10.2.20.1"
+            ipv4_gateway = "10.23.1.1"
 
             windows_options {
+
               computer_name  = "app-server"
               workgroup      = "terraform"
               admin_password = "VMw4re"
@@ -109,6 +140,7 @@ resource "vsphere_virtual_machine" "app_server_vm" {
               run_once_command_list = [
                   "powershell.exe Install-WindowsFeature -Name Web-Server, Web-Mgmt-Tools"
                   ]
+
             }
 
         }
@@ -126,12 +158,12 @@ resource "vsphere_virtual_machine" "db_server_vm" {
   scsi_type                   = data.vsphere_virtual_machine.template.scsi_type
   num_cpus                    = var.db_server_cpu_count
   memory                      = var.db_server_memory
-  wait_for_guest_net_timeout  = "1"
+  wait_for_guest_net_timeout  = "-1"
   firmware                    = "bios"
 
   network_interface {
 
-    network_id = data.vsphere_network.app_network.id
+    network_id = data.vsphere_network.db_network.id
     adapter_type = data.vsphere_virtual_machine.template.network_interface_types[0]
 
   }
@@ -154,11 +186,11 @@ resource "vsphere_virtual_machine" "db_server_vm" {
       
 
             network_interface {
-              ipv4_address = infoblox_ip.db_ls_cidr.ipaddress
+              ipv4_address = infoblox_ip.ls_db_cidr.ipaddress
               ipv4_netmask = 24
             }
 
-            ipv4_gateway = "10.2.21.1"
+            ipv4_gateway = "10.23.2.1"
             
 
             windows_options {
@@ -212,6 +244,12 @@ resource "nsxt_logical_tier1_router" "tier1_router" {
 
   display_name    = "tier1_router_terraform"
   edge_cluster_id = data.nsxt_edge_cluster.EC.id
+  enable_router_advertisement = true
+  advertise_connected_routes  = true
+  advertise_static_routes     = true
+  advertise_nat_routes        = true
+  advertise_lb_vip_routes     = true
+  advertise_lb_snat_ip_routes = true
 
 }
 
@@ -227,31 +265,31 @@ resource "nsxt_logical_router_link_port_on_tier1" "tier1_link_port" {
 
 
 
-resource "nsxt_logical_switch" "app_ls_terraform" {
+resource "nsxt_logical_switch" "ls_app_terraform" {
 
   admin_state       = "UP"
-  description       = "LS_App provisioned by Terraform"
-  display_name      = "LS_App_Terraform"
+  description       = "ls_app provisioned by Terraform"
+  display_name      = "ls_app_terraform"
   transport_zone_id = data.nsxt_transport_zone.overlay_transport_zone.id
   replication_mode  = "MTEP"
 
 }
 
-resource "nsxt_logical_switch" "db_ls_terraform" {
+resource "nsxt_logical_switch" "ls_db_terraform" {
 
   admin_state       = "UP"
-  description       = "LS_DB provisioned by Terraform"
-  display_name      = "LS_DB_Terraform"
+  description       = "ls_db provisioned by Terraform"
+  display_name      = "ls_db_terraform"
   transport_zone_id = data.nsxt_transport_zone.overlay_transport_zone.id
   replication_mode  = "MTEP"
 
 }
 
-resource "nsxt_logical_switch" "web_ls_terraform" {
+resource "nsxt_logical_switch" "ls_web_terraform" {
 
   admin_state       = "UP"
-  description       = "LS_Web provisioned by Terraform"
-  display_name      = "LS_Web_Terraform"
+  description       = "ls_web provisioned by Terraform"
+  display_name      = "ls_web_terraform"
   transport_zone_id = data.nsxt_transport_zone.overlay_transport_zone.id
   replication_mode  = "MTEP"
 
@@ -261,23 +299,23 @@ resource "nsxt_logical_switch" "web_ls_terraform" {
 
 resource "nsxt_logical_port" "logical_port_app_switch" {
   admin_state       = "UP"
-  description       = "LP1_app provisioned by Terraform"
-  display_name      = "LP1_app"
-  logical_switch_id = nsxt_logical_switch.app_ls_terraform.id
+  description       = "lp_app provisioned by Terraform"
+  display_name      = "lp_app_terraform"
+  logical_switch_id = nsxt_logical_switch.ls_app_terraform.id
 }
 
 resource "nsxt_logical_port" "logical_port_db_switch" {
   admin_state       = "UP"
-  description       = "LP1_db provisioned by Terraform"
-  display_name      = "LP1_db"
-  logical_switch_id = nsxt_logical_switch.db_ls_terraform.id
+  description       = "lp_db provisioned by Terraform"
+  display_name      = "lp_db_terraform"
+  logical_switch_id = nsxt_logical_switch.ls_db_terraform.id
 }
 
 resource "nsxt_logical_port" "logical_port_web_switch" {
   admin_state       = "UP"
-  description       = "LP1_web provisioned by Terraform"
-  display_name      = "LP1_web"
-  logical_switch_id = nsxt_logical_switch.web_ls_terraform.id
+  description       = "lp_web provisioned by Terraform"
+  display_name      = "lp_web_terraform"
+  logical_switch_id = nsxt_logical_switch.ls_web_terraform.id
 }
 
 #3 new downlink ports on the T1 router
@@ -287,7 +325,7 @@ resource "nsxt_logical_router_downlink_port" "downlink_port_app" {
   display_name                  = "downlink_port_app_terraform"
   logical_router_id             = nsxt_logical_tier1_router.tier1_router.id
   linked_logical_switch_port_id = nsxt_logical_port.logical_port_app_switch.id
-  ip_address                    = "10.2.20.1/24"
+  ip_address                    = "10.23.1.1/24"
 
 }
 
@@ -297,7 +335,7 @@ resource "nsxt_logical_router_downlink_port" "downlink_port_db" {
   display_name                  = "downlink_port_db_terraform"
   logical_router_id             = nsxt_logical_tier1_router.tier1_router.id
   linked_logical_switch_port_id = nsxt_logical_port.logical_port_db_switch.id
-  ip_address                    = "10.2.21.1/24"
+  ip_address                    = "10.23.2.1/24"
 
 }
 
@@ -306,7 +344,7 @@ resource "nsxt_logical_router_downlink_port" "downlink_port_web" {
   display_name                  = "downlink_port_app_terraform"
   logical_router_id             = nsxt_logical_tier1_router.tier1_router.id
   linked_logical_switch_port_id = nsxt_logical_port.logical_port_web_switch.id
-  ip_address                    = "10.2.22.1/24"
+  ip_address                    = "10.23.3.1/24"
 
 }
 
@@ -359,7 +397,7 @@ resource "nsxt_lb_http_virtual_server" "lb_virtual_server" {
   access_log_enabled         = true
   application_profile_id     = nsxt_lb_http_application_profile.http_app_profile.id
   enabled                    = true
-  ip_address                 = infoblox_ip.web_ls_cidr.ipaddress
+  ip_address                 = infoblox_ip.ls_web_cidr.ipaddress
   port                       = "80"
   default_pool_member_port   = "80"
   pool_id                    = nsxt_lb_pool.lb_pool.id
@@ -372,7 +410,7 @@ resource "nsxt_lb_service" "lb_service" {
 
   description        = "lb_service provisioned by Terraform"
   virtual_server_ids = [nsxt_lb_http_virtual_server.lb_virtual_server.id]
-  display_name       = "lb_service"
+  display_name       = "lb_service_terraform"
   enabled            = true
   logical_router_id  = nsxt_logical_tier1_router.tier1_router.id
   error_log_level    = "INFO"
