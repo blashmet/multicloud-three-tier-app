@@ -5,7 +5,7 @@ sys_path: ../../../modules/cleanup/cfngin_bucket_cleanup.cfn/
 
 stacks:
 
-  vmware-stack-tf-state:
+  azure-stack-tf-state:
     template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
     variables:
       BucketName: ${tf_state_vpc_bucket_name}
