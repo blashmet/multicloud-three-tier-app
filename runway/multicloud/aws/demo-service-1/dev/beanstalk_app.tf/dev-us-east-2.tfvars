@@ -1,5 +1,6 @@
 region = "us-east-2"
 environment = "dev"
-tf_state_vpc_bucket_name = "aws-us-east-2-dev-vpc-tf-state-bucket"
-tf_state_vpc_key_name = "env:/dev/vpc-dev.tfstate"
 application_name = "terraform-demo"
+beanstalk_service_role_name = "us-east-2-dev-beanstalk-service-role"
+beanstalk_ec2_instance_profile_name = "us-east-2-dev-beanstalk-ec2-instance-profile"
+beanstalk_ec2_instance_role_name = "us-east-2-dev-beanstalk-ec2-instance-role"

@@ -15,7 +15,7 @@ def empty_source_bucket(provider, context, **kwargs):  # pylint: disable=W0613
     """Empty source bucket"""
 
     #Stacks.yml Import Variables
-    bucket = kwargs.get('cfngin_bucket_name')
+    bucket = kwargs.get('cfngin_bucket_identifier')
     # Create an S3 client
     # Call S3 to list current buckets
 

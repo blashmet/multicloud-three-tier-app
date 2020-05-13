@@ -15,7 +15,7 @@ def create_cfngin_bucket(provider, context, **kwargs):  # pylint: disable=W0613
     """Empty source bucket"""
 
     #Stacks.yml Import Variables
-    bucket = kwargs.get('cfngin_bucket_name')
+    bucket = kwargs.get('cfngin_bucket_identifier')
     region = kwargs.get('region')
     s3 = boto3.resource('s3')
 

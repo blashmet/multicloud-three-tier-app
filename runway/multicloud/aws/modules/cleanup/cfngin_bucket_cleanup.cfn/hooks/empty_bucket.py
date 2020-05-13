@@ -6,7 +6,7 @@ import traceback
 import os
 import re
 
-from stacker.session_cache import get_session
+#from stacker.session_cache import get_session
 
 
 LOGGER = logging.getLogger(__name__)

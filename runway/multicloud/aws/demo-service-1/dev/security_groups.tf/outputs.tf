@@ -10,6 +10,10 @@ output "rds_sg_id" {
   value = module.security_groups.rds_sg_id
 }
 
+output "redis_sg_id" {
+  value = module.security_groups.redis_sg_id
+}
+
 output "jenkins_sg_id" {
   value = module.security_groups.jenkins_sg_id
 }

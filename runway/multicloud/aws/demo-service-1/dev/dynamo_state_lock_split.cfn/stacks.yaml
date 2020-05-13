@@ -1,0 +1,98 @@
+namespace: ${namespace}
+cfngin_bucket: ${namespace}-${cfngin_bucket_identifier}-dynamo-state-lock
+sys_path: ../../../modules/cleanup/cfngin_bucket_cleanup.cfn/
+
+
+stacks:
+
+  vpc-tf-state:
+    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
+    variables:
+      BucketName: ${namespace}-${tfstate_bucket_identifier}-vpc-tf-state
+      TableName: ${namespace}-${tfstate_table_identifier}-vpc-tf-state
+      S3CleanupLambdaArn: ${rxref s3-cleanup-lambda::S3CleanupLambdaArn}
+    enabled: true
+      
+  gateways-tf-state:
+    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
+    variables:
+      BucketName: ${namespace}-${tfstate_bucket_identifier}-gateways-tf-state
+      TableName: ${namespace}-${tfstate_table_identifier}-gateways-tf-state
+      S3CleanupLambdaArn: ${rxref s3-cleanup-lambda::S3CleanupLambdaArn}
+    enabled: true
+      
+  routes-tf-state:
+    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
+    variables:
+      BucketName: ${namespace}-${tfstate_bucket_identifier}-routes-tf-state
+      TableName: ${namespace}-${tfstate_table_identifier}-routes-tf-state
+      S3CleanupLambdaArn: ${rxref s3-cleanup-lambda::S3CleanupLambdaArn}
+    enabled: true
+
+  security-groups-tf-state:
+    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
+    variables:
+      BucketName: ${namespace}-${tfstate_bucket_identifier}-security-groups-tf-state
+      TableName: ${namespace}-${tfstate_table_identifier}-security-groups-tf-state
+      S3CleanupLambdaArn: ${rxref s3-cleanup-lambda::S3CleanupLambdaArn}
+    enabled: true
+
+  jenkins-ec2-tf-state:
+    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
+    variables:
+      BucketName: ${namespace}-${tfstate_bucket_identifier}-jenkins-ec2-groups-tf-state
+      TableName: ${namespace}-${tfstate_table_identifier}-jenkins-ec2-tf-state
+      S3CleanupLambdaArn: ${rxref s3-cleanup-lambda::S3CleanupLambdaArn}
+    enabled: true
+
+  rds-tf-state:
+    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
+    variables:
+      BucketName: ${namespace}-${tfstate_bucket_identifier}-rds-tf-state
+      TableName: ${namespace}-${tfstate_table_identifier}-rds-tf-state
+      S3CleanupLambdaArn: ${rxref s3-cleanup-lambda::S3CleanupLambdaArn}
+    enabled: true
+
+
+  elasticache-redis-tf-state:
+    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
+    variables:
+      BucketName: ${namespace}-${tfstate_bucket_identifier}-redis-tf-state
+      TableName: ${namespace}-${tfstate_table_identifier}-redis-tf-state
+      S3CleanupLambdaArn: ${rxref s3-cleanup-lambda::S3CleanupLambdaArn}
+    enabled: true
+
+      
+  beanstalk-app-tf-state:
+    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
+    variables:
+      BucketName: ${namespace}-${tfstate_bucket_identifier}-beanstalk-app-tf-state
+      TableName: ${namespace}-${tfstate_table_identifier}-beanstalk-app-tf-state
+      S3CleanupLambdaArn: ${rxref s3-cleanup-lambda::S3CleanupLambdaArn}
+    enabled: true
+      
+  beanstalk-env-tf-state:
+    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
+    variables:
+      BucketName: ${namespace}-${tfstate_bucket_identifier}-beanstalk-env-tf-state
+      TableName: ${namespace}-${tfstate_table_identifier}-beanstalk-env-tf-state
+      S3CleanupLambdaArn: ${rxref s3-cleanup-lambda::S3CleanupLambdaArn}
+    enabled: true
+      
+  beanstalk-source-tf-state:
+    template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
+    variables:
+      BucketName: ${namespace}-${tfstate_bucket_identifier}-beanstalk-source-tf-state
+      TableName: ${namespace}-${tfstate_table_identifier}-beanstalk-source-tf-state
+      S3CleanupLambdaArn: ${rxref s3-cleanup-lambda::S3CleanupLambdaArn}
+    enabled: true
+
+post_destroy:
+
+  empty_bucket:
+    
+    path:  hooks.empty_bucket.empty_source_bucket
+    args:
+      cfngin_bucket_name: ${namespace}-${cfngin_bucket_identifier}-dynamo-state-lock         
+      
+    enabled: true

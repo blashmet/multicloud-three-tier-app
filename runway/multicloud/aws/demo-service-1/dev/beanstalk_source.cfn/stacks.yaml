@@ -1,5 +1,5 @@
 namespace: ${namespace}
-cfngin_bucket: ${cfngin_bucket_name}
+cfngin_bucket: ${namespace}-${cfngin_bucket_identifier}-beanstalk-source
 sys_path: ../../../modules/cleanup/cfngin_bucket_cleanup.cfn/
 
 stacks:
@@ -7,7 +7,7 @@ stacks:
   beanstalk-source-bucket:
     template_path: ../../../modules/beanstalk/beanstalk_source.cfn/templates/s3_bucket.yml
     variables:
-      BucketName: ${namespace}-beanstalk-source-bucket
+      BucketName: ${namespace}-beanstalk-source-bucket-${beanstalk_app_version_source_bucket_identifier}
       S3CleanupLambdaArn: ${rxref s3-cleanup-lambda::S3CleanupLambdaArn}
 
 post_build:
@@ -15,8 +15,8 @@ post_build:
   source_bundle:
     path: hooks.upload_source.upload_source_bundle
     args:
-      s3_bucket: ${namespace}-beanstalk-source-bucket
-      bundle_path: "dotnet-asp-v1.zip"
+      s3_bucket: ${namespace}-beanstalk-source-bucket-${beanstalk_app_version_source_bucket_identifier}
+      bundle_path: "killer-demo-custom-beanstalk-deployment.zip"
 
 post_destroy:
   
@@ -24,7 +24,13 @@ post_destroy:
     
     path:  hooks.empty_bucket.empty_source_bucket
     args:
-      cfngin_bucket_name: ${cfngin_bucket_name}           
+      cfngin_bucket_name: ${namespace}-${cfngin_bucket_identifier}-beanstalk-source
+
+  empty_source_bucket:
+    
+    path:  hooks.empty_bucket.empty_source_bucket
+    args:
+      cfngin_bucket_name: ${namespace}-beanstalk-source-bucket-${beanstalk_app_version_source_bucket_identifier}           
       
     enabled: true
 

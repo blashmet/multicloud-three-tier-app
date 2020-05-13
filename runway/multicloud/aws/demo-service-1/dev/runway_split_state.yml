@@ -1,0 +1,511 @@
+---
+ignore_git_branch: true
+
+variables:
+  file_path: account_1.variables.yml
+
+deployments:
+
+  - name: aws-us-west-1-dev
+
+    parameters:
+
+      cfngin_bucket_identifier: ${var cfngin_bucket_identifier.${env DEPLOY_ENVIRONMENT}}
+      tfstate_bucket_identifier: ${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}
+      tfstate_table_identifier: ${var tfstate_table_identifier.${env DEPLOY_ENVIRONMENT}}
+      beanstalk_app_version_source_bucket_identifier: ${var beanstalk_app_version_source_bucket_identifier.${env DEPLOY_ENVIRONMENT}}
+      account_alias: ${var account_alias.${env DEPLOY_ENVIRONMENT}}
+
+    modules:
+
+        - name: s3_cleanup_lambda
+
+          path: s3_cleanup_lambda.cfn
+
+          tags:
+            - enabled
+            - ${env AWS_REGION}
+
+        - name: dynamo_state_lock
+
+          path: dynamo_state_lock.cfn
+
+          tags:
+            - enabled
+            - ${env AWS_REGION}
+
+        - name: secrets
+
+          path: secrets.cfn
+
+          tags:
+            - disabled
+            - ${env AWS_REGION}
+
+        - name: ec2_key_provider
+
+          path: ec2_key_provider.cfn
+
+          tags:
+            - enabled
+            - ${env AWS_REGION}
+
+        - name: ec2_keys
+
+          path: ec2_keys.cfn
+
+          tags:
+            - enabled
+            - ${env AWS_REGION}
+
+        - name: beanstalk_source
+
+          path: beanstalk_source.cfn
+
+          tags:
+            - enabled
+            - ${env AWS_REGION}
+
+        - name: vpc
+
+          path: vpc.tf
+
+          tags:
+            - enabled
+            - ${env AWS_REGION}
+
+          options:
+
+            terraform_backend_config:
+              region: ${env AWS_REGION}
+
+            terraform_backend_cfn_outputs:
+              bucket: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-vpc-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-vpc-tf-state::TerraformStateTableName
+
+        - name: gateways
+
+          path: gateways.tf
+
+          parameters:
+
+            tf_state_vpc_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-vpc-tf-state
+            tf_state_vpc_key_name: env:/${env DEPLOY_ENVIRONMENT}/vpc-${env DEPLOY_ENVIRONMENT}.tfstate
+
+          tags:
+            - enabled
+            - ${env AWS_REGION}
+
+          options:
+
+            terraform_backend_config:
+              region: ${env AWS_REGION}
+
+            terraform_backend_cfn_outputs:
+              bucket: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-gateways-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-gateways-tf-state::TerraformStateTableName
+
+        - name: routes
+
+          path: routes.tf
+
+          parameters:
+
+            tf_state_vpc_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-vpc-tf-state
+            tf_state_vpc_key_name: env:/${env DEPLOY_ENVIRONMENT}/vpc-${env DEPLOY_ENVIRONMENT}.tfstate
+
+            tf_state_gateways_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-gateways-tf-state
+            tf_state_gateways_key_name: env:/${env DEPLOY_ENVIRONMENT}/gateways-${env DEPLOY_ENVIRONMENT}.tfstate
+
+          tags:
+            - enabled
+            - ${env AWS_REGION}
+
+          options:
+
+            terraform_backend_config:
+              region: ${env AWS_REGION}
+
+            terraform_backend_cfn_outputs:
+              bucket: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-routes-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-routes-tf-state::TerraformStateTableName
+
+        - name: security_groups
+
+          path: security_groups.tf
+
+          parameters:
+            tf_state_vpc_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-vpc-tf-state
+            tf_state_vpc_key_name: env:/${env DEPLOY_ENVIRONMENT}/vpc-${env DEPLOY_ENVIRONMENT}.tfstate
+
+          tags:
+            - enabled
+            - ${env AWS_REGION}
+
+          options:
+
+            terraform_backend_config:
+              region: ${env AWS_REGION}
+
+            terraform_backend_cfn_outputs:
+              bucket: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-security-groups-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-security-groups-tf-state::TerraformStateTableName
+
+        - name: rds
+
+          path: rds.tf
+
+          parameters:
+
+            tf_state_vpc_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-vpc-tf-state
+            tf_state_vpc_key_name: env:/${env DEPLOY_ENVIRONMENT}/vpc-${env DEPLOY_ENVIRONMENT}.tfstate
+
+            tf_state_secrets_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-secrets-tf-state
+            tf_state_secrets_key_name: env:/${env DEPLOY_ENVIRONMENT}/secrets-${env DEPLOY_ENVIRONMENT}.tfstate
+
+            tf_state_security_groups_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-security-groups-tf-state
+            tf_state_security_groups_key_name: env:/${env DEPLOY_ENVIRONMENT}/security-groups-${env DEPLOY_ENVIRONMENT}.tfstate
+
+          tags:
+            - enabled
+            - ${env AWS_REGION}
+
+          options:
+
+            terraform_backend_config:
+              region: ${env AWS_REGION}
+
+            terraform_backend_cfn_outputs:
+              bucket: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-rds-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-rds-tf-state::TerraformStateTableName
+
+
+        - name: elasticache_redis
+
+          path: elasticache_redis.tf
+
+          parameters:
+
+            tf_state_vpc_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-vpc-tf-state
+            tf_state_vpc_key_name: env:/${env DEPLOY_ENVIRONMENT}/vpc-${env DEPLOY_ENVIRONMENT}.tfstate
+
+            tf_state_secrets_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-secrets-tf-state
+            tf_state_secrets_key_name: env:/${env DEPLOY_ENVIRONMENT}/secrets-${env DEPLOY_ENVIRONMENT}.tfstate
+
+            tf_state_security_groups_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-security-groups-tf-state
+            tf_state_security_groups_key_name: env:/${env DEPLOY_ENVIRONMENT}/security-groups-${env DEPLOY_ENVIRONMENT}.tfstate
+
+          tags:
+            - enabled
+            - ${env AWS_REGION}
+
+          options:
+
+            terraform_backend_config:
+              region: ${env AWS_REGION}
+
+            terraform_backend_cfn_outputs:
+              bucket: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-elasticache-redis-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-elasticache-redis-tf-state::TerraformStateTableName
+
+
+        - name: beanstalk_app
+
+          path: beanstalk_app.tf
+
+          parameters:
+            tf_state_vpc_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-vpc-tf-state
+            tf_state_vpc_key_name: env:/${env DEPLOY_ENVIRONMENT}/vpc-${env DEPLOY_ENVIRONMENT}.tfstate
+
+          tags:
+            - disabled
+            - ${env AWS_REGION}
+
+          options:
+
+            terraform_backend_config:
+              region: ${env AWS_REGION}
+
+            terraform_backend_cfn_outputs:
+              bucket: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-beanstalk-app-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-beanstalk-app-tf-state::TerraformStateTableName
+
+        - name: beanstalk_env
+
+          path: beanstalk_env.tf
+
+          parameters:
+
+            tf_state_vpc_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-vpc-tf-state
+            tf_state_vpc_key_name: env:/${env DEPLOY_ENVIRONMENT}/vpc-${env DEPLOY_ENVIRONMENT}.tfstate
+
+            tf_state_rds_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-rds-tf-state
+            tf_state_rds_key_name: env:/${env DEPLOY_ENVIRONMENT}/rds-${env DEPLOY_ENVIRONMENT}.tfstate
+
+            tf_state_beanstalk_app_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-beanstalk-app-tf-state
+            tf_state_beanstalk_app_key_name: env:/${env DEPLOY_ENVIRONMENT}/beanstalk-app-${env DEPLOY_ENVIRONMENT}.tfstate
+            
+            tf_state_security_groups_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-security-groups-tf-state
+            tf_state_security_groups_key_name: env:/${env DEPLOY_ENVIRONMENT}/security-groups-${env DEPLOY_ENVIRONMENT}.tfstate
+
+          tags:
+            - disabled
+            - ${env AWS_REGION}
+
+          options:
+
+            terraform_backend_config:
+              region: ${env AWS_REGION}
+
+            terraform_backend_cfn_outputs:
+              bucket: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-beanstalk-env-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-beanstalk-env-tf-state::TerraformStateTableName
+
+    #The following env_vars may be used to create a Terraform based infrastructure pipeline
+    #They enable CI (disable prompts) and store the .tfplan files as artifacts on 'runway plan'
+    env_vars:
+        TF_CLI_ARGS_plan: "-out tfplan"
+        TF_CLI_ARGS_apply: "-input=false"
+        TF_IN_AUTOMATION: "disabled"
+        CI: "enabled"
+
+    regions:
+      - us-west-1
+
+  - name: aws-us-east-2-dev
+
+    parameters:
+
+      cfngin_bucket_identifier: ${var cfngin_bucket_identifier.${env DEPLOY_ENVIRONMENT}}
+      tfstate_bucket_identifier: ${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}
+      tfstate_table_identifier: ${var tfstate_table_identifier.${env DEPLOY_ENVIRONMENT}}
+      beanstalk_app_version_source_bucket_identifier: ${var beanstalk_app_version_source_bucket_identifier.${env DEPLOY_ENVIRONMENT}}
+      account_alias: ${var account_alias.${env DEPLOY_ENVIRONMENT}}
+
+    modules:
+
+        - name: s3_cleanup_lambda
+
+          path: s3_cleanup_lambda.cfn
+
+          tags:
+            - disabled
+            - ${env AWS_REGION}
+
+        - name: dynamo_state_lock
+
+          path: dynamo_state_lock.cfn
+
+          tags:
+            - disabled
+            - ${env AWS_REGION}
+
+        - name: secrets
+
+          path: secrets.cfn
+
+          tags:
+            - disabled
+            - ${env AWS_REGION}
+
+        - name: ec2_key_provider
+
+          path: ec2_key_provider.cfn
+
+          tags:
+            - disabled
+            - ${env AWS_REGION}
+
+        - name: ec2_keys
+
+          path: ec2_keys.cfn
+
+          tags:
+            - disabled
+            - ${env AWS_REGION}
+
+        - name: beanstalk_source
+
+          path: beanstalk_source.cfn
+
+          tags:
+            - disabled
+            - ${env AWS_REGION}
+
+        - name: vpc
+
+          path: vpc.tf
+
+          tags:
+            - disabled
+            - ${env AWS_REGION}
+
+          options:
+
+            terraform_backend_config:
+              region: ${env AWS_REGION}
+
+            terraform_backend_cfn_outputs:
+              bucket: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-vpc-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-vpc-tf-state::TerraformStateTableName
+
+        - name: gateways
+
+          path: gateways.tf
+
+          parameters:
+
+            tf_state_vpc_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-vpc-tf-state
+            tf_state_vpc_key_name: env:/${env DEPLOY_ENVIRONMENT}/vpc-${env DEPLOY_ENVIRONMENT}.tfstate
+
+          tags:
+            - disabled
+            - ${env AWS_REGION}
+
+          options:
+
+            terraform_backend_config:
+              region: ${env AWS_REGION}
+
+            terraform_backend_cfn_outputs:
+              bucket: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-gateways-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-gateways-tf-state::TerraformStateTableName
+
+        - name: routes
+
+          path: routes.tf
+
+          parameters:
+
+            tf_state_vpc_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-vpc-tf-state
+            tf_state_vpc_key_name: env:/${env DEPLOY_ENVIRONMENT}/vpc-${env DEPLOY_ENVIRONMENT}.tfstate
+
+            tf_state_gateways_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-gateways-tf-state
+            tf_state_gateways_key_name: env:/${env DEPLOY_ENVIRONMENT}/gateways-${env DEPLOY_ENVIRONMENT}.tfstate
+
+          tags:
+            - disabled
+            - ${env AWS_REGION}
+
+          options:
+
+            terraform_backend_config:
+              region: ${env AWS_REGION}
+
+            terraform_backend_cfn_outputs:
+              bucket: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-routes-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-routes-tf-state::TerraformStateTableName
+
+        - name: security_groups
+
+          path: security_groups.tf
+
+          parameters:
+            tf_state_vpc_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-vpc-tf-state
+            tf_state_vpc_key_name: env:/${env DEPLOY_ENVIRONMENT}/vpc-${env DEPLOY_ENVIRONMENT}.tfstate
+
+          tags:
+            - disabled
+            - ${env AWS_REGION}
+
+          options:
+
+            terraform_backend_config:
+              region: ${env AWS_REGION}
+
+            terraform_backend_cfn_outputs:
+              bucket: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-security-groups-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-security-groups-tf-state::TerraformStateTableName
+
+        - name: rds
+
+          path: rds.tf
+
+          parameters:
+
+            tf_state_vpc_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-vpc-tf-state
+            tf_state_vpc_key_name: env:/${env DEPLOY_ENVIRONMENT}/vpc-${env DEPLOY_ENVIRONMENT}.tfstate
+
+            tf_state_secrets_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-secrets-tf-state
+            tf_state_secrets_key_name: env:/${env DEPLOY_ENVIRONMENT}/secrets-${env DEPLOY_ENVIRONMENT}.tfstate
+
+            tf_state_security_groups_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-security-groups-tf-state
+            tf_state_security_groups_key_name: env:/${env DEPLOY_ENVIRONMENT}/security-groups-${env DEPLOY_ENVIRONMENT}.tfstate
+
+          tags:
+            - disabled
+            - ${env AWS_REGION}
+
+          options:
+
+            terraform_backend_config:
+              region: ${env AWS_REGION}
+
+            terraform_backend_cfn_outputs:
+              bucket: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-rds-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-rds-tf-state::TerraformStateTableName
+
+          
+
+        - name: beanstalk_app
+
+          path: beanstalk_app.tf
+
+          parameters:
+            tf_state_vpc_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-vpc-tf-state
+            tf_state_vpc_key_name: env:/${env DEPLOY_ENVIRONMENT}/vpc-${env DEPLOY_ENVIRONMENT}.tfstate
+
+          tags:
+            - disabled
+            - ${env AWS_REGION}
+
+          options:
+
+            terraform_backend_config:
+              region: ${env AWS_REGION}
+
+            terraform_backend_cfn_outputs:
+              bucket: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-beanstalk-app-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-beanstalk-app-tf-state::TerraformStateTableName
+
+        - name: beanstalk_env
+
+          path: beanstalk_env.tf
+
+          parameters:
+
+            tf_state_vpc_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-vpc-tf-state
+            tf_state_vpc_key_name: env:/${env DEPLOY_ENVIRONMENT}/vpc-${env DEPLOY_ENVIRONMENT}.tfstate
+
+            tf_state_rds_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-rds-tf-state
+            tf_state_rds_key_name: env:/${env DEPLOY_ENVIRONMENT}/rds-${env DEPLOY_ENVIRONMENT}.tfstate
+
+            tf_state_beanstalk_app_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-beanstalk-app-tf-state
+            tf_state_beanstalk_app_key_name: env:/${env DEPLOY_ENVIRONMENT}/beanstalk-app-${env DEPLOY_ENVIRONMENT}.tfstate
+            
+            tf_state_security_groups_bucket_name: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}-security-groups-tf-state
+            tf_state_security_groups_key_name: env:/${env DEPLOY_ENVIRONMENT}/security-groups-${env DEPLOY_ENVIRONMENT}.tfstate
+
+          tags:
+            - disabled
+            - ${env AWS_REGION}
+
+          options:
+
+            terraform_backend_config:
+              region: ${env AWS_REGION}
+
+            terraform_backend_cfn_outputs:
+              bucket: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-beanstalk-env-tf-state::TerraformStateBucketName
+              dynamodb_table: aws-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-beanstalk-env-tf-state::TerraformStateTableName
+
+    #the following env_vars may be used to create a Terraform based infrastructure pipeline
+    #they enable CI (disable prompts) and store the .tfplan files as artifacts on 'runway plan'
+    env_vars:
+        TF_CLI_ARGS_plan: "-out tfplan"
+        TF_CLI_ARGS_apply: "-input=false"
+        TF_IN_AUTOMATION: "disabled"
+        CI: "disabled"
+
+    regions:
+      - us-east-2

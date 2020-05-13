@@ -16,5 +16,7 @@ variable "beanstalk_app_version_source_bucket_name" {}
 variable "beanstalk_app_version_source_bucket_key_name" {}
 variable "beanstalk_environment_name" {}
 variable "beanstalk_config_template_name" {}
+variable "beanstalk_service_role_name" {}
+variable "beanstalk_ec2_instance_profile_name" {}
 variable "aws_terraform_demo_ec2_keypair_name" {}
 variable "solution_stack_name" {}

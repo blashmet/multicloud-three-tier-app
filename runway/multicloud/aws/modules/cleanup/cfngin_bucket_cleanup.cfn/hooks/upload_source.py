@@ -26,7 +26,7 @@ def upload_source_bundle(provider, context, **kwargs):
 
             Filename=filename,
             Bucket=s3_bucket,
-            Key="dotnet-blue.zip"
+            Key="killer-demo-custom-beanstalk-deployment.zip"
 
         )
 

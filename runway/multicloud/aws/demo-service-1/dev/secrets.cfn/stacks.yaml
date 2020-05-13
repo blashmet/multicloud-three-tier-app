@@ -1,5 +1,5 @@
 namespace: ${namespace}
-cfngin_bucket: ${cfngin_bucket_name}
+cfngin_bucket: ${namespace}-${cfngin_bucket_identifier}-secrets
 sys_path: ../../../modules/cleanup/cfngin_bucket_cleanup.cfn/
 
 
@@ -9,7 +9,7 @@ pre_build:
     
     path:  hooks.create_bucket.create_cfngin_bucket
     args:
-      cfngin_bucket_name: ${cfngin_bucket_name} 
+      cfngin_bucket_identifier: ${cfngin_bucket_identifier} 
       region: ${region}          
       
     enabled: false
@@ -29,6 +29,6 @@ post_destroy:
     
     path:  hooks.empty_bucket.empty_source_bucket
     args:
-      cfngin_bucket_name: ${cfngin_bucket_name}           
+      cfngin_bucket_name: ${namespace}-${cfngin_bucket_identifier}-secrets          
       
     enabled: true

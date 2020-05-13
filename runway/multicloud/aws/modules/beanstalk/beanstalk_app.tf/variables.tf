@@ -1,24 +1,8 @@
-variable "region" {
-  description = "The region to deploy to."
-  type        = string
-}
-
-variable "environment" {
-  description = "The environment name."
-  type        = string
-}
-
-variable "application_name" {
-  description = "The app name."
-  type        = string
-}
-
-variable "tf_state_vpc_bucket_name" {
-  description = "State bucket."
-  type        = string
-}
-
-variable "tf_state_vpc_key_name" {
-  description = "State key."
-  type        = string
-}
+variable "region" {}
+variable "environment" {}
+variable "beanstalk_service_role_name" {}
+variable "beanstalk_ec2_instance_profile_name" {}
+variable "beanstalk_ec2_instance_role_name" {}
+variable "application_name" {}
+variable "tf_state_vpc_bucket_name" {}
+variable "tf_state_vpc_key_name" {}

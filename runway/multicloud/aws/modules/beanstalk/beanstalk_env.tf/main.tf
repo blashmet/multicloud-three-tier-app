@@ -18,23 +18,23 @@ data "terraform_remote_state" "vpc" {
 
 }
 
-data "terraform_remote_state" "rds" {
-  backend = "s3"
-  config = {
-    bucket = var.tf_state_rds_bucket_name
-    key = var.tf_state_rds_key_name
-    region = var.region
-  }
+# data "terraform_remote_state" "rds" {
+#   backend = "s3"
+#   config = {
+#     bucket = var.tf_state_rds_bucket_name
+#     key = var.tf_state_rds_key_name
+#     region = var.region
+#   }
 
-  defaults = {
+#   defaults = {
   
-    rds_endpoint = ""
-    rds_username = ""
+#     rds_endpoint = ""
+#     rds_username = ""
 
-  }
+#   }
 
 
-}
+# }
 
 data "terraform_remote_state" "beanstalk_app" {
   backend = "s3"
@@ -108,7 +108,7 @@ resource "aws_elastic_beanstalk_configuration_template" "beanstalk_config_templa
 
     namespace = "aws:ec2:vpc"
     name = "Subnets"
-    value = "${data.terraform_remote_state.vpc.outputs.pri_sub_1_id}, ${data.terraform_remote_state.vpc.outputs.pri_sub_2_id}" 
+    value = "${data.terraform_remote_state.vpc.outputs.pub_sub_1_id}, ${data.terraform_remote_state.vpc.outputs.pub_sub_2_id}" 
 
   }
 
@@ -118,7 +118,18 @@ resource "aws_elastic_beanstalk_configuration_template" "beanstalk_config_templa
     value = "${data.terraform_remote_state.vpc.outputs.pub_sub_1_id}, ${data.terraform_remote_state.vpc.outputs.pub_sub_2_id}"
   }
 
+  
+  setting {
+    namespace = "aws:elasticbeanstalk:xray"
+    name = "XRayEnabled"
+    value = "true"
+  }
 
+    setting {
+    namespace = "aws:elasticbeanstalk:healthreporting:system"
+    name = "SystemType"
+    value = "enhanced"
+  }
 
   setting {
     namespace = "aws:autoscaling:asg"
@@ -153,7 +164,7 @@ resource "aws_elastic_beanstalk_configuration_template" "beanstalk_config_templa
 
     namespace = "aws:autoscaling:launchconfiguration"
     name = "IamInstanceProfile"
-    value = "aws-elasticbeanstalk-ec2-role"
+    value = var.beanstalk_ec2_instance_profile_name
 
   }
 
@@ -168,7 +179,7 @@ resource "aws_elastic_beanstalk_configuration_template" "beanstalk_config_templa
   setting {
     namespace = "aws:elasticbeanstalk:environment"
     name = "ServiceRole"
-    value = "aws-elasticbeanstalk-service-role"
+    value = var.beanstalk_service_role_name
   }
 
     setting {
@@ -209,11 +220,11 @@ resource "aws_elastic_beanstalk_configuration_template" "beanstalk_config_templa
     #value = "mydb"
   #}
 
-  setting {
-    namespace = "aws:elasticbeanstalk:application:environment"
-    name = "RDS_HOSTNAME"
-    value =  data.terraform_remote_state.rds.outputs.rds_endpoint
-  }
+  # setting {
+  #   namespace = "aws:elasticbeanstalk:application:environment"
+  #   name = "RDS_HOSTNAME"
+  #   value =  data.terraform_remote_state.rds.outputs.rds_endpoint
+  # }
 
 }
 
@@ -236,5 +247,7 @@ resource "aws_elastic_beanstalk_environment" "beanstalk_env" {
   application         = data.terraform_remote_state.beanstalk_app.outputs.beanstalk_app_name
 
   template_name       = aws_elastic_beanstalk_configuration_template.beanstalk_config_template.name
+
+  version_label       = var.beanstalk_app_version_name
 
 }

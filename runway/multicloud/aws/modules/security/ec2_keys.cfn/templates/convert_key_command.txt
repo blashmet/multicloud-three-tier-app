@@ -1,0 +1,1 @@
+$env:AWS_PROFILE="vcorelab1"; aws ssm get-parameter --name /us-west-1/dev/service-1-private-key --with-decryption --query Parameter.Value --output text --region us-west-1 | openssl rsa > C:\Users\blash\desktop\key.pem

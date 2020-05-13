@@ -1,0 +1,36 @@
+#GLOBAL VARIABLES
+cfngin_bucket_identifier:
+  dev: account-1
+  prod: account-1
+
+tfstate_bucket_identifier:
+  dev: account-1
+  prod: account-1
+
+tfstate_table_identifier:
+  dev: account-1
+  prod: account-1
+
+beanstalk_app_version_source_bucket_identifier:
+  dev: account-1
+  prod: account-1
+
+account_alias:
+  dev: account-1
+  prod: account-1
+  
+#OTHER EXAMPLES BELOW
+
+account_id:
+  company: 123456789012
+assume_role:
+  dev: arn:aws:iam::account-id1:role/role-name
+image_id:
+  dev: ami-abc123
+envvars:
+  profile:
+    dev: foo
+    prod: bar
+  app_path:
+    - myapp.tf
+    - foo

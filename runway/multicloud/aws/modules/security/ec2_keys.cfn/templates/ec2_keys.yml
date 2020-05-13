@@ -18,6 +18,7 @@ Resources:
     Properties:
       Name: !Ref PrivateKeyName
       ServiceToken: !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:binxio-cfn-secret-provider'
+      KeyFormat: TraditionalOpenSSL
 
   KeyPair:
     Type: Custom::KeyPair
@@ -31,6 +32,6 @@ Outputs:
 
   KeyPair:
     Description: KeyPair Name
-    Value: !Ref "KeyPairName"
+    Value: !Ref KeyPairName
     Export:
       Name: !Ref KeyPairName    

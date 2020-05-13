@@ -112,6 +112,34 @@ resource "aws_security_group" "rds" {
   }
 }
 
+
+resource "aws_security_group" "redis" {
+  name        = "redis-sg-${var.region}-${var.environment}"
+  description = "Allow 3306 ingress from the backend ec2 instances to the RDS database"
+  vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
+
+  ingress {
+    description = "HTTPS from the load balancer"
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    security_groups = [aws_security_group.ec2.id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "rds-sg-${var.region}-${var.environment}"
+  }
+}
+
+
+
 resource "aws_security_group" "jenkins" {
   name        = "jenkins-sg-${var.region}-${var.environment}"
   description = "Allow 8080 from specified IP"
