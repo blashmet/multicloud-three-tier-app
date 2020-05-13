@@ -1,5 +1,5 @@
 namespace: ${namespace}
-cfngin_bucket: ${cfngin_bucket_name}
+cfngin_bucket: ${namespace}-${cfngin_bucket_identifier}-dynamo-state-lock
 sys_path: ../../../modules/cleanup/cfngin_bucket_cleanup.cfn/
 
 
@@ -8,11 +8,10 @@ stacks:
   vmware-stack-tf-state:
     template_path: ../../../modules/bootstrap/dynamo_state_lock.cfn/templates/dynamo_state_lock.yml
     variables:
-      BucketName: ${tf_state_vpc_bucket_name}
-      TableName: ${tf_state_vpc_table_name}
+      BucketName: ${namespace}-${tfstate_bucket_identifier}-vmware-stack-tf-state
+      TableName: ${namespace}-${tfstate_table_identifier}-vmware-stack-tf-state
       S3CleanupLambdaArn: ${rxref s3-cleanup-lambda::S3CleanupLambdaArn}
     enabled: true
-      
 
 post_destroy:
 
@@ -20,6 +19,6 @@ post_destroy:
     
     path:  hooks.empty_bucket.empty_source_bucket
     args:
-      cfngin_bucket_name: ${cfngin_bucket_name}           
+      cfngin_bucket_name: ${namespace}-${cfngin_bucket_identifier}-dynamo-state-lock         
       
     enabled: true

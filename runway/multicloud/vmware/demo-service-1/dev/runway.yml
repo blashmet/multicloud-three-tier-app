@@ -1,9 +1,19 @@
 ---
 ignore_git_branch: true
 
+variables:
+  file_path: lab_vcore.variables.yml
+
 deployments:
 
   - name: vmware-us-west-1-dev
+
+    parameters:
+
+      cfngin_bucket_identifier: ${var cfngin_bucket_identifier.${env DEPLOY_ENVIRONMENT}}
+      tfstate_bucket_identifier: ${var tfstate_bucket_identifier.${env DEPLOY_ENVIRONMENT}}
+      tfstate_table_identifier: ${var tfstate_table_identifier.${env DEPLOY_ENVIRONMENT}}
+      account_alias: ${var account_alias.${env DEPLOY_ENVIRONMENT}}
 
     modules:
         
@@ -17,33 +27,10 @@ deployments:
           path: vmware_stack.tf
           options:
               terraform_backend_config:
-                region: us-west-1
+                region: ${env AWS_REGION}
               terraform_backend_cfn_outputs:
-                bucket: vmware-us-west-1-dev-vmware-stack-tf-state::TerraformStateBucketName
-                dynamodb_table: vmware-us-west-1-dev-vmware-stack-tf-state::TerraformStateTableName
+                bucket: vmware-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-vmware-stack-tf-state::TerraformStateBucketName
+                dynamodb_table: vmware-${env AWS_REGION}-${env DEPLOY_ENVIRONMENT}-vmware-stack-tf-state::TerraformStateTableName
     
     regions:
       - us-west-1
-
-      
-  - name: vmware-us-east-2-dev
-
-    modules:
-
-        - name: s3_cleanup_lambda
-          path: s3_cleanup_lambda.cfn
-
-        - name: dynamo_state_lock
-          path: dynamo_state_lock.cfn
-
-        - name: vmware_stack
-          path: vmware_stack.tf
-          options:
-            terraform_backend_config:
-              region: us-east-2
-            terraform_backend_cfn_outputs:
-              bucket: vmware-us-east-2-dev-vmware-stack-tf-state::TerraformStateBucketName
-              dynamodb_table: vmware-us-east-2-dev-vmware-stack-tf-state::TerraformStateTableName
-
-    regions:
-      - us-east-2

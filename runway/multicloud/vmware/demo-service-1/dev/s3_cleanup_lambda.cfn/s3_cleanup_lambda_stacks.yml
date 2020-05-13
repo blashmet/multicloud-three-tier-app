@@ -1,5 +1,5 @@
 namespace: ${namespace}
-cfngin_bucket: ${cfngin_bucket_name}
+cfngin_bucket: ${namespace}-${cfngin_bucket_identifier}-s3-cleanup-lambda
 
 sys_path: ../../../modules/cleanup/cfngin_bucket_cleanup.cfn/
 
@@ -9,13 +9,12 @@ stacks:
     variables:
       FunctionName: ${function_name}
 
-
 post_destroy:
 
   empty_bucket:
     
     path:  hooks.empty_bucket.empty_source_bucket
     args:
-      cfngin_bucket_name: ${cfngin_bucket_name}           
+      cfngin_bucket_name: ${namespace}-${cfngin_bucket_identifier}-s3-cleanup-lambda          
       
     enabled: true

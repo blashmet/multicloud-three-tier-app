@@ -149,65 +149,65 @@ resource "vsphere_virtual_machine" "app_server_vm" {
 
 }
 
-resource "vsphere_virtual_machine" "db_server_vm" {
+# resource "vsphere_virtual_machine" "db_server_vm" {
 
-  name                        = var.db_server_name
-  resource_pool_id            = data.vsphere_resource_pool.pool.id
-  datastore_id                = data.vsphere_datastore.datastore.id
-  guest_id                    = data.vsphere_virtual_machine.template.guest_id
-  scsi_type                   = data.vsphere_virtual_machine.template.scsi_type
-  num_cpus                    = var.db_server_cpu_count
-  memory                      = var.db_server_memory
-  wait_for_guest_net_timeout  = "-1"
-  firmware                    = "bios"
+#   name                        = var.db_server_name
+#   resource_pool_id            = data.vsphere_resource_pool.pool.id
+#   datastore_id                = data.vsphere_datastore.datastore.id
+#   guest_id                    = data.vsphere_virtual_machine.template.guest_id
+#   scsi_type                   = data.vsphere_virtual_machine.template.scsi_type
+#   num_cpus                    = var.db_server_cpu_count
+#   memory                      = var.db_server_memory
+#   wait_for_guest_net_timeout  = "-1"
+#   firmware                    = "bios"
 
-  network_interface {
+#   network_interface {
 
-    network_id = data.vsphere_network.db_network.id
-    adapter_type = data.vsphere_virtual_machine.template.network_interface_types[0]
+#     network_id = data.vsphere_network.db_network.id
+#     adapter_type = data.vsphere_virtual_machine.template.network_interface_types[0]
 
-  }
+#   }
 
 
-  disk {
+#   disk {
 
-    label            = "disk0"
-    size             = data.vsphere_virtual_machine.template.disks.0.size
-    eagerly_scrub    = data.vsphere_virtual_machine.template.disks.0.eagerly_scrub
-    thin_provisioned = data.vsphere_virtual_machine.template.disks.0.thin_provisioned
+#     label            = "disk0"
+#     size             = data.vsphere_virtual_machine.template.disks.0.size
+#     eagerly_scrub    = data.vsphere_virtual_machine.template.disks.0.eagerly_scrub
+#     thin_provisioned = data.vsphere_virtual_machine.template.disks.0.thin_provisioned
 
-  }
+#   }
 
-  clone {
+#   clone {
 
-    template_uuid = data.vsphere_virtual_machine.template.id
+#     template_uuid = data.vsphere_virtual_machine.template.id
 
-        customize {
+#         customize {
       
 
-            network_interface {
-              ipv4_address = infoblox_ip.ls_db_cidr.ipaddress
-              ipv4_netmask = 24
-            }
+#             network_interface {
+#               ipv4_address = infoblox_ip.ls_db_cidr.ipaddress
+#               ipv4_netmask = 24
+#             }
 
-            ipv4_gateway = "10.23.2.1"
+#             ipv4_gateway = "10.23.2.1"
             
 
-            windows_options {
-              computer_name  = "db-server"
-              workgroup      = "terraform"
-              admin_password = "VMw4re"
-              auto_logon = true
-              auto_logon_count = 1
-              run_once_command_list = [
-                  "powershell.exe Install-WindowsFeature -Name Web-Server, Web-Mgmt-Tools"
-                  ]
-                }
-            }
+#             windows_options {
+#               computer_name  = "db-server"
+#               workgroup      = "terraform"
+#               admin_password = "VMw4re"
+#               auto_logon = true
+#               auto_logon_count = 1
+#               run_once_command_list = [
+#                   "powershell.exe Install-WindowsFeature -Name Web-Server, Web-Mgmt-Tools"
+#                   ]
+#                 }
+#             }
 
-        }
+#         }
 
-  }
+#   }
 
 
 
@@ -298,24 +298,30 @@ resource "nsxt_logical_switch" "ls_web_terraform" {
 #3 new ports on each logical switch
 
 resource "nsxt_logical_port" "logical_port_app_switch" {
+
   admin_state       = "UP"
   description       = "lp_app provisioned by Terraform"
   display_name      = "lp_app_terraform"
   logical_switch_id = nsxt_logical_switch.ls_app_terraform.id
+
 }
 
 resource "nsxt_logical_port" "logical_port_db_switch" {
+
   admin_state       = "UP"
   description       = "lp_db provisioned by Terraform"
   display_name      = "lp_db_terraform"
   logical_switch_id = nsxt_logical_switch.ls_db_terraform.id
+
 }
 
 resource "nsxt_logical_port" "logical_port_web_switch" {
+
   admin_state       = "UP"
   description       = "lp_web provisioned by Terraform"
   display_name      = "lp_web_terraform"
   logical_switch_id = nsxt_logical_switch.ls_web_terraform.id
+  
 }
 
 #3 new downlink ports on the T1 router
