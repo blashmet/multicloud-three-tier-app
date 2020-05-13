@@ -1,0 +1,32 @@
+#GLOBAL VARIABLES
+cfngin_bucket_identifier:
+  dev: vcore-azure-lab
+  prod: vcore-azure-lab
+
+tfstate_bucket_identifier:
+  dev: vcore-azure-lab
+  prod: vcore-azure-lab
+
+tfstate_table_identifier:
+  dev: vcore-azure-lab
+  prod: vcore-azure-lab
+
+account_alias:
+  dev: vcore-azure-lab
+  prod: vcore-azure-lab
+  
+#OTHER EXAMPLES BELOW
+
+account_id:
+  company: 123456789012
+assume_role:
+  dev: arn:aws:iam::account-id1:role/role-name
+image_id:
+  dev: ami-abc123
+envvars:
+  profile:
+    dev: foo
+    prod: bar
+  app_path:
+    - myapp.tf
+    - foo

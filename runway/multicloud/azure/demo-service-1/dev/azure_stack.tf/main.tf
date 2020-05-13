@@ -6,7 +6,6 @@ variable "vnet_name" {}
 variable "vnet_address_space" {}
 variable "subnet_cidr" {}
 
-
 #PROVIDERS
 
 provider "azurerm" {
@@ -14,11 +13,12 @@ provider "azurerm" {
   version = "=2.4.0"
 
   subscription_id = "bccb3520-01c7-44db-98e0-deaa490233d7"
-  client_id       = "885edc4a-ede3-4fdc-a1b9-8a4d66cfaaed"
-  client_secret   = "a9798a01-61ca-4741-90ff-089c2c50a5f0"
-  tenant_id       = "5a0768c0-1ed7-4834-8317-469fa48fde8a"
+  client_id       = "3df5fc8f-96da-4e22-9d51-80c9e347804e"
+  client_secret   = "6378e22f-03c5-4877-b803-fd6874ee0a2a"
+  tenant_id       = "5a0768c0-1ed7-4834-8317-469fa48fde8a" 
 
   features {}
+  
 }
 
 #BACKEND
