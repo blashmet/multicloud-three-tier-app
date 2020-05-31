@@ -1,0 +1,11 @@
+{
+  "isProduction": "true",
+  "urlAddress": "",
+  "urlToDo": "http://40.77.24.104/",
+  "deployLocation": "PKS k8s",
+  "urlDadJoke": "",
+  "version": "PKS k8s ",
+  "urlPerson": "http://168.61.220.219/",
+  "urlDevOps": "https://dev.azure.com/KillerDemo/KillerDemo/_apis/build/",
+  "azPAT": "Basic OmF0Mmp4amVnZno2cHZjNTJtc2xoemxuN3lzbm9yY2xhbndkbHB6dW1pZm1lc241dG9idGE="
+}
