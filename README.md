@@ -1,9 +1,8 @@
 #Overview
 
-This multicloud project arose out of 3 PBIs that required creating Terraform code to provision
-3-Tier (load balancer, web app, and database) applications on AWS, VMware, and Azure.
+This multicloud project provisions a 3-Tier application (load balancer, web app, and database) on prem (vSphere\NSX-T), as well as to the 3 major public cloud providers (AWS, Azure, and GCP)
 
-An infrastructure as code command line tool ('runway') wraps the project and, while not technically, is practically required to use the code within the project.
+An infrastructure as code command line tool ('runway') wraps the project.
 
 The full documentation for runway may be found here (https://docs.onica.com/projects/runway/en/release/), but a brief getting started guide is provided below.
 
@@ -40,7 +39,3 @@ CI may be set to any non-null value if you would like to remove prompts to imple
     -template.yml (parameterized CloudFormation template, which contains an outputs section. the outputs may be referenced in stacks.yml to pass values between stacks)
 
 3. For Terraform modules, see here for directory structure and how to configure them (https://docs.onica.com/projects/runway/en/release/terraform/directory_structure.html)
-
-4. Adding new modules to the project requires a thourough understanding of the code layout and how runway expects configuration files to be formatted.
-If you would like to contribute to the project, please let Brandon Lashmet know (brandon.lashmet@vcoretec.com) and he can set up a meeting to walk you through
-the basics.
