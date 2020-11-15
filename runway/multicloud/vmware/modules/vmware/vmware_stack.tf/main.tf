@@ -196,7 +196,7 @@ resource "vsphere_virtual_machine" "app_server_vm" {
 #             windows_options {
 #               computer_name  = "db-server"
 #               workgroup      = "terraform"
-#               admin_password = "VMw4re"
+#               admin_password = ""
 #               auto_logon = true
 #               auto_logon_count = 1
 #               run_once_command_list = [

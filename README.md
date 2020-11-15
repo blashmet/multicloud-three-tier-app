@@ -1,9 +1,11 @@
-# Introduction 
+# Introduction
+
  This project provisions a 3-Tier application (load balancer, web app, and database) on-prem (vSphere\NSX-T), in addition to the 3 most prominent public cloud providers (AWS, Azure, and GCP).
 
 # Architecture
+
 ![Overview](./runway/diagrams/Overview.svg)
-![vRA_Workflows](./runway/diagrams/Overview.svg)
+![vRA_Workflows](./runway/diagrams/vRA_Workflows.svg)
 
 # Deployment Process
 
@@ -17,6 +19,7 @@ CI may be set to any non-null value if you would like to remove prompts to imple
 4. Execute "runway deploy" to be presented with a list of deployment options regulated by runway.yml in the environment directory root.
 
 # Misc
+
 1. This project includes both CloudFormation and Terraform.
 
 2. For CloudFormation modules, runway synthesizes 4 files to generate deployment options (e.g., region, IAM role to assume, etc.) and, lastly, a finalized CloudFormation template that uploads to an S3 bucket and executes using the CloudFormation service.

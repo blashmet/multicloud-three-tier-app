@@ -143,7 +143,7 @@ resource "azurerm_virtual_machine" "test" {
 
    computer_name  = "terraform-demo-vm"
    admin_username = "terraform-admin"
-   admin_password = "SuperSecretPassword!"
+   admin_password = ""
 
  }
 
