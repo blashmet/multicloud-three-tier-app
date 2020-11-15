@@ -5,7 +5,8 @@
 # Architecture
 
 ![Overview](./runway/diagrams/Overview.svg)
-![vRA_Workflows](./runway/diagrams/vRA_Workflows.svg)
+
+![vRA](./runway/diagrams/vRA.svg)
 
 # Deployment Process
 
