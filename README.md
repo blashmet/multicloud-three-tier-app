@@ -1,16 +1,11 @@
-#Overview
+# Introduction 
+ This project provisions a 3-Tier application (load balancer, web app, and database) on-prem (vSphere\NSX-T), in addition to the 3 most prominent public cloud providers (AWS, Azure, and GCP).
 
-This multicloud project provisions a 3-Tier application (load balancer, web app, and database) on prem (vSphere\NSX-T), as well as to the 3 major public cloud providers (AWS, Azure, and GCP)
+# Architecture
+![Overview](./runway/diagrams/Overview.svg)
+![vRA_Workflows](./runway/diagrams/Overview.svg)
 
-An infrastructure as code command line tool ('runway') wraps the project.
-
-The full documentation for runway may be found here (https://docs.onica.com/projects/runway/en/release/), but a brief getting started guide is provided below.
-
-#Created By
-
-Brandon Lashmet
-
-#Directions on how to leverage the code
+# Deployment Process
 
 1. Install runway (https://docs.onica.com/projects/runway/en/release/installation.html)
 
@@ -21,14 +16,12 @@ CI may be set to any non-null value if you would like to remove prompts to imple
 
 4. Execute "runway deploy" to be presented with a list of deployment options regulated by runway.yml in the environment directory root.
 
-
-#Variables/Parameters
-
+# Misc
 1. This project includes both CloudFormation and Terraform.
 
 2. For CloudFormation modules, runway synthesizes 4 files to generate deployment options (e.g., region, IAM role to assume, etc.) and, lastly, a finalized CloudFormation template that uploads to an S3 bucket and executes using the CloudFormation service.
 
-  The 4 files are as follows
+  The 4 files are as follows:
 
     -runway.yml (contains the names of the modules to run along with numerous other config options, see full details here: https://docs.onica.com/projects/runway/en/release/runway_config.html#top-level-configuration)
 
