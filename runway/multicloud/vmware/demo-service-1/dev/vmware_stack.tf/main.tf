@@ -1,6 +1,6 @@
 #VARIABLES
 #SHARED RESOURCES
-variable "vsphere_datacenter_name" { }
+variable "vspherfe_datacenter_name" { }
 variable "vsphere_datastore_name" { }
 variable "vsphere_resource_pool_name" { }
 variable "app_network_name" { }
@@ -22,7 +22,7 @@ variable "db_server_disk_space" { }
 #PROVIDERS
 provider "vsphere" {
   user           = "blashmet"
-  password       = "vcorelabR0cks"
+  password       = ""
   vsphere_server = "siovcsa01.vcorelab.com"
 
   # If you have a self-signed cert
@@ -32,7 +32,7 @@ provider "vsphere" {
 provider "nsxt" {
   host                     = "192.168.225.107"
   username                 = "admin"
-  password                 = "Wak3^N0w1234!"
+  password                 = ""
   allow_unverified_ssl     = true
   max_retries              = 10
   retry_min_delay          = 500
@@ -43,7 +43,7 @@ provider "nsxt" {
 
 provider "infoblox" {
     username = "admin"
-    password = "Wak3^N0w"
+    password = ""
     #server = "10.1.1.18"
     host  = "https://gridpri.vcorelab.com/"
     sslverify = "false"
